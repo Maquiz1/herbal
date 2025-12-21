@@ -13,7 +13,17 @@ from .views import (
     CRF7ListView, CRF7CreateUpdateView,
     
     OverduePatientsCSVExportView,
+    
+    VoiceReminderTwiMLView,
+    
+    CRF1DeleteView, CRF2DeleteView, CRF3DeleteView,
+    CRF4DeleteView, CRF5DeleteView, CRF6DeleteView, CRF7DeleteView,
+    
+    TemplateDetailsView,   
+    
 )
+
+from nimregenin.views.reminders import VoiceReminderTwiMLView
 
 app_name = 'nimregenin'
 
@@ -75,4 +85,23 @@ urlpatterns = [
     
     
     path('export/overdue-patients/csv/', OverduePatientsCSVExportView.as_view(), name='overdue_patients_csv'),
+    
+    path('voice/reminder/', VoiceReminderTwiMLView.as_view(), name='voice_reminder'),
+    path('voice/reminder/<str:site_code>/', VoiceReminderTwiMLView.as_view(), name='voice_reminder_site'),
+    
+    path('voice/reminder/', VoiceReminderTwiMLView.as_view(), name='voice_reminder'),
+    path('voice/reminder/<str:site_code>/', VoiceReminderTwiMLView.as_view(), name='voice_reminder_site'),
+    
+    
+    path('crf1/<int:pk>/delete/', CRF1DeleteView.as_view(), name='crf1_delete'),
+    path('crf2/<int:pk>/delete/', CRF2DeleteView.as_view(), name='crf2_delete'),
+    path('crf3/<int:pk>/delete/', CRF3DeleteView.as_view(), name='crf3_delete'),
+    path('crf4/<int:pk>/delete/', CRF4DeleteView.as_view(), name='crf4_delete'),
+    path('crf5/<int:pk>/delete/', CRF5DeleteView.as_view(), name='crf5_delete'),
+    path('crf6/<int:pk>/delete/', CRF6DeleteView.as_view(), name='crf6_delete'),
+    path('crf7/<int:pk>/delete/', CRF7DeleteView.as_view(), name='crf7_delete'),
+    
+    
+    path('template/<str:visit_type>/', TemplateDetailsView.as_view(), name='template_details'),
+    path('template/', TemplateDetailsView.as_view(), name='template_details'),  # fallback
 ]

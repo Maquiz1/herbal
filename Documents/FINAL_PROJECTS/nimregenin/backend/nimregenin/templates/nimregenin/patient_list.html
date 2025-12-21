@@ -2,221 +2,212 @@
 {% block title %}Patients{% endblock %}
 
 {% block content %}
-<!-- Header Stats Cards -->
-<div class="row mb-4">
-    <div class="col-md-4 mb-3">
-        <div class="card text-white bg-primary h-100">
-            <div class="card-body">
-                <h5><i class="bi bi-people"></i> Total Patients</h5>
-                <h3>{{ total_patients }}</h3>
+    <!-- Header Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                    <h5><i class="bi bi-people"></i> Total Patients</h5>
+                    <h3>{{ total_patients }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-success h-100">
+                <div class="card-body">
+                    <h5><i class="bi bi-check-circle"></i> Screened</h5>
+                    <h3>{{ total_screened }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info h-100">
+                <div class="card-body">
+                    <h5><i class="bi bi-person-check"></i> Enrolled</h5>
+                    <h3>{{ total_enrolled }}</h3>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="card text-white bg-success h-100">
-            <div class="card-body">
-                <h5><i class="bi bi-check-circle"></i> Screened</h5>
-                <h3>{{ total_screened }}</h3>
-            </div>
+
+    <!-- Overdue Alert Banner -->
+    {% if overdue_patient_count > 0 %}
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+        <div>
+            <strong>Warning:</strong> {{ overdue_patient_count }} patient(s) have overdue visits.
+            <a href="{% url 'nimregenin:overdue_patients_csv' %}" class="alert-link ms-2">
+                <i class="bi bi-download"></i> Export Overdue List (CSV)
+            </a>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="card text-white bg-info h-100">
-            <div class="card-body">
-                <h5><i class="bi bi-person-check"></i> Enrolled</h5>
-                <h3>{{ total_enrolled }}</h3>
-            </div>
+    {% endif %}
+
+    <!-- Page Title + Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Patient Registry</h2>
+        <div>
+            {% if overdue_patient_count > 0 %}
+            <a href="{% url 'nimregenin:overdue_patients_csv' %}" class="btn btn-danger me-2">
+                <i class="bi bi-download"></i> Export Overdue (CSV)
+            </a>
+            {% endif %}
+            <a href="{% url 'nimregenin:patient_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Add New Patient
+            </a>
         </div>
     </div>
-</div>
 
-{% with overdue_count=patients|length %} {# Or calculate properly in view #}
-{% if overdue_count > 0 %}
-<div class="alert alert-danger d-flex align-items-center" role="alert">
-    <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
-    <div>
-        <strong>Attention:</strong> {{ overdue_count }} patient(s) have overdue visits.
-        <a href="{% url 'nimregenin:overdue_patients_csv' %}" class="alert-link">
-            Download overdue list (CSV)
-        </a>
-    </div>
-</div>
-{% endif %}
-{% endwith %}
+    <!-- Search Form -->
+    <form method="get" class="mb-4">
+        <div class="input-group" style="max-width: 400px;">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by ID, ethnicity, race..." value="{{ search_term }}">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i> Search
+            </button>
+            {% if search_term %}
+            <a href="{% url 'nimregenin:patient_list' %}" class="btn btn-outline-danger">
+                <i class="bi bi-x"></i>
+            </a>
+            {% endif %}
+        </div>
+    </form>
 
-{% if overdue_patient_count > 0 %}
-<div class="alert alert-danger d-flex align-items-center" role="alert">
-    <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
-    <div>
-        <strong>Warning:</strong> {{ overdue_patient_count }} patient(s) have overdue visits.
-        <a href="{% url 'nimregenin:overdue_patients_csv' %}" class="alert-link ms-2">
-            <i class="bi bi-download"></i> Export CSV
-        </a>
-    </div>
-</div>
-{% endif %}
-
-<!-- Page Title + Add Button -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Patient Registry</h2>
-    <a href="{% url 'nimregenin:overdue_patients_csv' %}" class="btn btn-danger me-2">
-        <i class="bi bi-download"></i> Export Overdue Patients (CSV)
-    </a>
-    <a href="{% url 'nimregenin:patient_create' %}" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Add New Patient
-    </a>
-</div>
-
-<!-- Search Form -->
-<form method="get" class="mb-4">
-    <div class="input-group" style="max-width: 400px;">
-        <input type="text" name="search" class="form-control" placeholder="Search by ID, ethnicity, race..."
-            value="{{ search_term }}">
-        <button class="btn btn-outline-secondary" type="submit">
-            <i class="bi bi-search"></i> Search
-        </button>
-        {% if search_term %}
-        <a href="{% url 'nimregenin:patient_list' %}" class="btn btn-outline-danger">
-            <i class="bi bi-x"></i>
-        </a>
-        {% endif %}
-    </div>
-</form>
-
-<!-- Patient Table -->
-<div class="table-responsive">
-    <table class="table table-striped table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th rowspan="2">Patient<br>ID</th>
-                <th rowspan="2">Age /<br>Gender</th>
-                <th rowspan="2">Date<br>Added</th>
-                <th rowspan="2">Screened</th>
-                <th rowspan="2">Enrolled</th>
-                <th colspan="7" class="text-center">
-                    Visit Schedule
-                    {% if patient.overdue_visits > 0 %}
-                    <span class="badge bg-danger ms-2">{{ patient.overdue_visits }} Overdue</span>
-                    {% endif %}
-                </th>
-                <th rowspan="2">Actions</th>
-            </tr>
-            <tr>
-                <th title="Baseline">Day 0</th>
-                <th title="Follow-up">Day 7</th>
-                <th title="Follow-up">Day 14</th>
-                <th title="Follow-up">Day 30</th>
-                <th title="Follow-up">Day 60</th>
-                <th title="Follow-up">Day 90</th>
-                <th title="Follow-up">Day 120</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for patient in patients %}
-            <tr>
-                <td><strong>{{ patient.patient_id }}</strong></td>
-                <td>
-                    {% if patient.age %}{{ patient.age }} yrs{% endif %}
-                    {% if patient.get_gender_display %}<br>/ {{ patient.get_gender_display }}{% endif %}
-                </td>
-                <td>{{ patient.created_at|date:"M d, Y" }}</td>
-                <td>
-                    {% if patient.screened > 0 %}
-                    <span class="badge bg-success">Yes</span>
-                    {% else %}
-                    <span class="badge bg-secondary">No</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if patient.enrolled > 0 %}
-                    <span class="badge bg-info text-dark">Yes</span>
-                    {% else %}
-                    <span class="badge bg-secondary">No</span>
-                    {% endif %}
-                </td>
-
-                <!-- Visit Columns -->
-                {% for visit in patient.visits.all|dictsort:"planned_date" %}
-                <td class="text-center position-relative">
-                    <a href="{% url 'nimregenin:patient_visit_detail' patient.pk visit.pk %}"
-                        class="text-decoration-none"
-                        title="{{ visit.get_visit_type_display }} - Planned: {{ visit.planned_date|date:'M d, Y' }}">
-                        {% if visit.completed %}
-                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                        {% elif visit.is_overdue %}
-                        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            !
-                        </span>
-                        {% elif visit.actual_date %}
-                        <i class="bi bi-circle-fill text-warning fs-5"></i>
+    <!-- Patient Table -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th rowspan="2">Patient<br>ID</th>
+                    <th rowspan="2">Age /<br>Gender</th>
+                    <th rowspan="2">Date<br>Added</th>
+                    <th rowspan="2">Screened</th>
+                    <th rowspan="2">Enrolled</th>
+                    <th colspan="7" class="text-center">Visit Schedule</th>
+                    <th rowspan="2">Actions</th>
+                </tr>
+                <tr>
+                    <th>Day 0</th>
+                    <th>Day 7</th>
+                    <th>Day 14</th>
+                    <th>Day 30</th>
+                    <th>Day 60</th>
+                    <th>Day 90</th>
+                    <th>Day 120</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td><strong>{{ patient.patient_id }}</strong></td>
+                    <td>
+                        {% if patient.age %}{{ patient.age }} yrs{% endif %}
+                        {% if patient.get_gender_display %}<br>/ {{ patient.get_gender_display }}{% endif %}
+                    </td>
+                    <td>{{ patient.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        {% if patient.screened > 0 %}
+                            <span class="badge bg-success">Yes</span>
                         {% else %}
-                        <i class="bi bi-circle text-muted fs-5"></i>
+                            <span class="badge bg-secondary">No</span>
                         {% endif %}
-                    </a>
-                </td>
-                {% empty %}
-                <td colspan="7" class="text-center text-muted">No visits scheduled</td>
-                {% endfor %}
+                    </td>
+                    <td>
+                        {% if patient.enrolled > 0 %}
+                            <span class="badge bg-info text-dark">Yes</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
 
-                <td>
-                    <a href="{% url 'nimregenin:patient_update' patient.pk %}" class="btn btn-sm btn-warning">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="12" class="text-center py-4">
-                    {% if search_term %}
-                    No patients found for "{{ search_term }}".
-                    {% else %}
-                    No patients registered yet.
-                    <a href="{% url 'nimregenin:patient_create' %}">Add the first one</a>.
+                    <!-- Visit Schedule Columns -->
+                    {% for visit in patient.visits.all|dictsort:"planned_date" %}
+                    <td class="text-center position-relative">
+                        <a href="{% url 'nimregenin:patient_visit_detail' patient.pk visit.pk %}"
+                           class="text-decoration-none"
+                           title="{{ visit.get_visit_type_display }} - Planned: {{ visit.planned_date|date:'M d, Y' }}">
+                            {% if visit.completed %}
+                                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                            {% elif visit.is_overdue %}
+                                <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    !
+                                </span>
+                            {% elif visit.actual_date %}
+                                <i class="bi bi-circle-fill text-warning fs-5"></i>
+                            {% else %}
+                                <i class="bi bi-circle text-muted fs-5"></i>
+                            {% endif %}
+                        </a>
+                    </td>
+                    {% empty %}
+                    <td colspan="7" class="text-center text-muted">No visits scheduled</td>
+                    {% endfor %}
+
+                    <!-- Per-Patient Overdue Badge in Header Row -->
+                    {% if patient.overdue_visits > 0 %}
+                    <td rowspan="2" class="align-middle text-center">
+                        <span class="badge bg-danger">{{ patient.overdue_visits }} Overdue</span>
+                    </td>
                     {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 
-<!-- Visit Status Legend -->
-<div class="mt-4">
-    <small class="text-muted">
-        <strong>Visit Status Legend:</strong><br>
-        <i class="bi bi-check-circle-fill text-success"></i> Completed &nbsp;&nbsp;
-        <i class="bi bi-exclamation-triangle-fill text-danger"></i> Overdue (past planned date + 7-day window)
-        &nbsp;&nbsp;
-        <i class="bi bi-circle-fill text-warning"></i> Visit occurred but incomplete &nbsp;&nbsp;
-        <i class="bi bi-circle text-muted"></i> Pending
-    </small>
-</div>
+                    <td>
+                        <a href="{% url 'nimregenin:patient_update' patient.pk %}"
+                           class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="13" class="text-center py-4">
+                        {% if search_term %}
+                            No patients found for "{{ search_term }}".
+                        {% else %}
+                            No patients registered yet.
+                            <a href="{% url 'nimregenin:patient_create' %}">Add the first one</a>.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-<!-- Pagination -->
-{% if is_paginated %}
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center mt-4">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link"
-                href="?page={{ page_obj.previous_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
-                Previous
-            </a>
-        </li>
-        {% endif %}
-        <li class="page-item disabled">
-            <a class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</a>
-        </li>
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link"
-                href="?page={{ page_obj.next_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
-                Next
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
+    <!-- Visit Status Legend -->
+    <div class="mt-4">
+        <small class="text-muted">
+            <strong>Visit Status Legend:</strong><br>
+            <i class="bi bi-check-circle-fill text-success"></i> Completed &nbsp;&nbsp;
+            <i class="bi bi-exclamation-triangle-fill text-danger"></i> Overdue (past planned + 7 days) &nbsp;&nbsp;
+            <i class="bi bi-circle-fill text-warning"></i> Visit occurred but incomplete &nbsp;&nbsp;
+            <i class="bi bi-circle text-muted"></i> Pending
+        </small>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-4">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <a class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</a>
+            </li>
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 {% endblock %}

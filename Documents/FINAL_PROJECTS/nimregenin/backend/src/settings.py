@@ -155,3 +155,65 @@ SITE_REMINDER_EMAILS = {
 
 # Fallback: central team if site has no email configured
 CENTRAL_OVERDUE_RECIPIENTS = ['central_monitor@example.com']
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/overdue_reminders.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'nimregenin.management.commands.send_overdue_reminders': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+
+# Twilio Configuration
+TWILIO_ACCOUNT_SID = 'your_account_sid_here'
+TWILIO_AUTH_TOKEN = 'your_auth_token_here'
+TWILIO_PHONE_NUMBER = '+15551234567'  # Your Twilio number
+
+# Site-specific SMS numbers (mobile phones that should receive alerts)
+SITE_SMS_NUMBERS = {
+    'SITE001': ['+15551234567', '+15559876543'],  # Site coordinators' phones
+    'SITE002': ['+15551112222'],
+    'SITE003': ['+15553334444'],
+    # Add all sites
+}
+
+# Fallback central monitor SMS
+CENTRAL_SMS_NUMBERS = ['+15550000000']  # Sponsor/central monitor
+
+
+
+# WhatsApp numbers that have opted in (format: whatsapp:+15551234567)
+SITE_WHATSAPP_NUMBERS = {
+    'SITE001': ['whatsapp:+15551234567', 'whatsapp:+15559876543'],
+    'SITE002': ['whatsapp:+15551112222'],
+    'SITE003': ['whatsapp:+15553334444'],
+    # Only numbers that have messaged your Twilio number first (opt-in)
+}
+
+CENTRAL_WHATSAPP_NUMBERS = ['whatsapp:+15550000000']  # Central monitor
