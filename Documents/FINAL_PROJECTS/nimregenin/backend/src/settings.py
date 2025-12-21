@@ -119,3 +119,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'  # Default redirect for LoginRequiredMixin
 LOGIN_REDIRECT_URL = '/'  # Redirect after login (to home)
 LOGOUT_REDIRECT_URL = '/login/'  # Optional: Redirect after logout
+
+
+# Email configuration (use your SMTP or test with console for development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development, prints emails to console
+# For production, configure SMTP settings like below:
+#
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # or 'django.core.mail.backends.console.EmailBackend' for testing
+
+EMAIL_HOST = 'smtp.gmail.com'  # Example for Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-study-email@gmail.com'  # Change this
+EMAIL_HOST_PASSWORD = 'your-app-password'       # Use App Password if 2FA enabled
+
+# Default from email
+DEFAULT_FROM_EMAIL = 'NIM Regenin Study <your-study-email@gmail.com>'
+
+# Recipients for reminders
+OVERDUE_REMINDER_RECIPIENTS = [
+    'coordinator1@example.com',
+    'coordinator2@example.com',
+    # Add real emails
+]
+
+
+# Site-specific reminder recipients
+SITE_REMINDER_EMAILS = {
+    'SITE001': ['site001_coordinator@hospital.com', 'pi_site001@hospital.com'],
+    'SITE002': ['site002_monitor@university.edu'],
+    'SITE003': ['coordinator@regionalclinic.org'],
+    'SITE004': ['dr.smith@privatepractice.com'],
+    # Add all your sites
+}
+
+# Fallback: central team if site has no email configured
+CENTRAL_OVERDUE_RECIPIENTS = ['central_monitor@example.com']

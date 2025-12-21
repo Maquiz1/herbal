@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     HomeView,
-    DemographicListView, DemographicCreateUpdateView,
+    PatientListView, DemographicCreateUpdateView,PatientVisitDetailView,
     ScreeningListView, ScreeningCreateUpdateView,
     EnrollmentListView, EnrollmentCreateUpdateView,
     CRF1ListView, CRF1CreateUpdateView,
@@ -11,6 +11,8 @@ from .views import (
     CRF5ListView, CRF5CreateUpdateView,
     CRF6ListView, CRF6CreateUpdateView,
     CRF7ListView, CRF7CreateUpdateView,
+    
+    OverduePatientsCSVExportView,
 )
 
 app_name = 'nimregenin'
@@ -18,10 +20,13 @@ app_name = 'nimregenin'
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
 
-    # Demographic
-    path('demographics/', DemographicListView.as_view(), name='demographic_list'),
-    path('demographics/new/', DemographicCreateUpdateView.as_view(), name='demographic_create'),
-    path('demographics/<int:pk>/edit/', DemographicCreateUpdateView.as_view(), name='demographic_update'),
+    # Patient
+    path('patients/', PatientListView.as_view(), name='patient_list'),
+    path('patients/<int:patient_pk>/visit/<int:visit_pk>/', 
+     PatientVisitDetailView.as_view(), 
+     name='patient_visit_detail'),
+    path('patients/new/', DemographicCreateUpdateView.as_view(), name='patient_create'),
+    path('patients/<int:pk>/edit/', DemographicCreateUpdateView.as_view(), name='patient_update'),
 
     # Screening
     path('screening/', ScreeningListView.as_view(), name='screening_list'),
@@ -67,4 +72,7 @@ urlpatterns = [
     path('crf7/', CRF7ListView.as_view(), name='crf7_list'),
     path('crf7/new/', CRF7CreateUpdateView.as_view(), name='crf7_create'),
     path('crf7/<int:pk>/edit/', CRF7CreateUpdateView.as_view(), name='crf7_update'),
+    
+    
+    path('export/overdue-patients/csv/', OverduePatientsCSVExportView.as_view(), name='overdue_patients_csv'),
 ]

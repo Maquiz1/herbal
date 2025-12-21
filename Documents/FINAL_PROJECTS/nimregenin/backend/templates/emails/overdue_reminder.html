@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Overdue Visit Reminder</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        h1, h2 { color: #d32f2f; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f5f5f5; }
+        .badge { background: #d32f2f; color: white; padding: 4px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>NIM Regenin Registry - Overdue Visit Alert</h1>
+    <p><strong>Date:</strong> {{ today }}</p>
+
+    <p>The following <strong>{{ total_overdue }} visit(s)</strong> are overdue (past planned date + 7-day window):</p>
+
+    {% for pid, data in patients_overdue.items %}
+    <div style="margin: 20px 0; padding: 15px; border-left: 5px solid #d32f2f; background: #fff5f5;">
+        <h2>Patient ID: {{ pid }}</h2>
+        <p><strong>Age/Gender:</strong> {{ data.patient.age|default:"N/A" }} / {{ data.patient.get_gender_display|default:"N/A" }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Visit</th>
+                    <th>Planned Date</th>
+                    <th>Days Overdue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data.visits %}
+                <tr>
+                    <td><strong>{{ item.visit.get_visit_type_display }}</strong></td>
+                    <td>{{ item.visit.planned_date }}</td>
+                    <td><span class="badge">{{ item.days_overdue }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+    <hr>
+    <p><em>This is an automated reminder from the NIM Regenin Electronic Data Capture system.</em></p>
+</body>
+</html>

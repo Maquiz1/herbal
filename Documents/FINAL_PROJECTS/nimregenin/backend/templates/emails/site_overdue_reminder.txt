@@ -1,0 +1,26 @@
+NIM Regenin Registry - Site-Specific Overdue Reminder
+===================================================
+Site: {{ site_name }} ({{ site_code }})
+Date: {{ today.strftime('%B %d, %Y') }}
+
+The following patients at your site have overdue visits:
+
+{% for pid, data in patients_overdue.items %}
+Patient ID: {{ pid }}
+Age/Gender: {{ data.patient.age|default:"N/A" }} / {{ data.patient.get_gender_display|default:"N/A" }}
+
+Overdue Visits:
+{% for item in data.visits %}
+  - {{ item.visit.get_visit_type_display }}
+    Planned: {{ item.visit.planned_date }}
+    Days overdue: {{ item.days_overdue }}
+{% endfor %}
+
+{% endfor %}
+
+Total overdue at your site: {{ total_overdue }}
+
+Please schedule and complete these visits as soon as possible.
+
+Thank you,
+NIM Regenin Study Team

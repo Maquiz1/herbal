@@ -1,0 +1,50 @@
+<!-- templates/includes/sidebar.html -->
+
+<div class="bg-dark border-end" id="sidebar-wrapper">
+    <div class="sidebar-heading bg-primary text-white py-3 text-center">
+        <i class="bi bi-hospital fs-3"></i><br>
+        <strong>NIM Regenin</strong>
+    </div>
+    <div class="list-group list-group-flush">
+        <a href="{% url 'nimregenin:home' %}" 
+           class="list-group-item list-group-item-action bg-dark text-white {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <i class="bi bi-house-door"></i> Dashboard
+        </a>
+        <a href="{% url 'nimregenin:patient_list' %}" 
+           class="list-group-item list-group-item-action bg-dark text-white {% if request.resolver_match.url_name == 'patient_list' %}active{% endif %}">
+            <i class="bi bi-people"></i> Patients
+        </a>
+        <a href="{% url 'nimregenin:screening_list' %}" 
+           class="list-group-item list-group-item-action bg-dark text-white">
+            <i class="bi bi-check-circle"></i> Screening
+        </a>
+        <a href="{% url 'nimregenin:enrollment_list' %}" 
+           class="list-group-item list-group-item-action bg-dark text-white">
+            <i class="bi bi-person-check"></i> Enrollment
+        </a>
+
+        <!-- CRFs Dropdown -->
+        <div class="dropdown">
+            <a class="list-group-item list-group-item-action bg-dark text-white dropdown-toggle" 
+               href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-file-medical"></i> CRFs
+            </a>
+            <ul class="dropdown-menu bg-dark border-0 shadow-none">
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf1_list' %}">CRF1 - Baseline</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf2_list' %}">CRF2 - Physical Exam</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf3_list' %}">CRF3 - Labs</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf4_list' %}">CRF4 - Adverse Events</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf5_list' %}">CRF5 - Con Meds</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf6_list' %}">CRF6 - Efficacy</a></li>
+                <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf7_list' %}">CRF7 - Completion</a></li>
+            </ul>
+        </div>
+
+        {% if user.is_staff %}
+        <a href="{% url 'admin:index' %}" 
+           class="list-group-item list-group-item-action bg-dark text-white mt-4">
+            <i class="bi bi-gear"></i> Django Admin
+        </a>
+        {% endif %}
+    </div>
+</div>

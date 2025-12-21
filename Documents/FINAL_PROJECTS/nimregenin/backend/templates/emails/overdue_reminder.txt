@@ -1,0 +1,24 @@
+NIM Regenin Registry - Overdue Visit Reminder
+============================================
+Date: {{ today.strftime('%B %d, %Y') }}
+
+The following patients have overdue visits (more than 7 days past planned date):
+
+{% for pid, data in patients_overdue.items %}
+Patient ID: {{ pid }}
+Age/Gender: {{ data.patient.age|default:"N/A" }} / {{ data.patient.get_gender_display|default:"N/A" }}
+
+Overdue Visits:
+{% for item in data.visits %}
+  - {{ item.visit.get_visit_type_display }} 
+    Planned: {{ item.visit.planned_date }}
+    Days overdue: {{ item.days_overdue }}
+{% endfor %}
+
+{% endfor %}
+
+Total overdue visits: {{ total_overdue }}
+
+Please follow up with sites as soon as possible.
+
+This is an automated message from the NIM Regenin EDC system.

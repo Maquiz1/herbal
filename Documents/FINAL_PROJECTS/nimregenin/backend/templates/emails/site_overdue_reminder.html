@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Overdue Visits - {{ site_name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        h1 { color: #d32f2f; }
+        .site-header { background: #f8d7da; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f5f5f5; }
+        .badge { background: #d32f2f; color: white; padding: 4px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Overdue Visit Reminder - {{ site_name }}</h1>
+
+    <div class="site-header">
+        <strong>Site Code:</strong> {{ site_code }}<br>
+        <strong>Date:</strong> {{ today }}
+    </div>
+
+    <p>The following <strong>{{ total_overdue }} visit(s)</strong> at your site are overdue:</p>
+
+    {% for pid, data in patients_overdue.items %}
+    <div style="margin: 20px 0; padding: 15px; background: #fff5f5; border-left: 5px solid #d32f2f;">
+        <h3>Patient ID: {{ pid }}</h3>
+        <p><strong>Age/Gender:</strong> {{ data.patient.age|default:"N/A" }} / {{ data.patient.get_gender_display|default:"N/A" }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Visit</th>
+                    <th>Planned Date</th>
+                    <th>Days Overdue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data.visits %}
+                <tr>
+                    <td><strong>{{ item.visit.get_visit_type_display }}</strong></td>
+                    <td>{{ item.visit.planned_date }}</td>
+                    <td><span class="badge">{{ item.days_overdue }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+    <hr>
+    <p><em>Automated message from NIM Regenin EDC System</em></p>
+</body>
+</html>
