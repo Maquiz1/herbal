@@ -15,7 +15,7 @@ class ScreeningListView(LoginRequiredMixin, TemplateView):
     """
     List all screening records with patient context.
     """
-    template_name = 'nimregenin/screening_list.html'
+    template_name = 'nimregenin/screening/screening_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

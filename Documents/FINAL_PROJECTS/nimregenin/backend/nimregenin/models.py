@@ -100,6 +100,10 @@ class Screening(models.Model):
     failure_reason = models.TextField(blank=True)
     screened_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     def __str__(self):
         return f"Screening - {self.patient.patient_id}"
 
@@ -122,6 +126,10 @@ class Enrollment(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='ENROLLED')
     enrolled_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     def __str__(self):
         return f"{self.patient.patient_id} - Enrolled {self.enrollment_date}"
 
@@ -143,6 +151,10 @@ class Visit(models.Model):
     actual_date = models.DateField(null=True, blank=True)
     completed = models.BooleanField(default=False)
 
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
         unique_together = ('patient', 'visit_type')
 

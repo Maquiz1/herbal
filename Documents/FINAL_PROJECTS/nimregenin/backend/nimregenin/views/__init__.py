@@ -5,8 +5,8 @@ from .dashboard import HomeView
 from .create_update import CreateUpdateView
 from .export import OverduePatientsCSVExportView
 from .delete import CRFDeleteView
-from .screening import *
-from .enrollment import *
+from .screening import ScreeningListView, ScreeningCreateUpdateView, ScreeningDeleteView
+from .enrollment import EnrollmentListView, EnrollmentCreateUpdateView
 from .protocol import TemplateDetailsView   
 
 
@@ -18,18 +18,13 @@ __all__ = [
     'CreateUpdateView',
     
     # demographic views...
-    'PatientListView',
-    'DemographicCreateUpdateView',
-    'PatientVisitDetailView',
+    'PatientListView','DemographicCreateUpdateView','PatientVisitDetailView',
     
     # screening views...
-    'ScreeningListView',
-    'ScreeningCreateUpdateView',
-    'ScreeningDeleteView',
+    'ScreeningListView','ScreeningCreateUpdateView','ScreeningDeleteView',
     
     # enrollment views...
-    'EnrollmentListView',
-    'EnrollmentCreateUpdateView',
+    'EnrollmentListView','EnrollmentCreateUpdateView',
     
     # protocol views...
     'TemplateDetailsView',
