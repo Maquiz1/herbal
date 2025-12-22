@@ -1,41 +1,90 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.urls import reverse
 
 class Demographic(models.Model):
-    patient_id = models.CharField(max_length=50, unique=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-    age = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(120)])
-    
+    """
+    Patient demographic information.
+    Central model — all other data (screening, enrollment, visits, CRFs) link to this.
+    """
+
+    # Unique identifier
+    patient_id = models.CharField(
+        max_length=50,
+        unique=True,
+        help_text="Unique patient identifier (e.g., PT-001)"
+    )
+
+    # Site assignment
+    SITE_CHOICES = (
+        ('SITE001', 'Site 001 - City Hospital'),
+        ('SITE002', 'Site 002 - University Medical Center'),
+        ('SITE003', 'Site 003 - Regional Clinic'),
+        ('SITE004', 'Site 004 - Private Practice'),
+        # Add more sites as needed
+    )
+    site = models.CharField(
+        max_length=20,  # Matches longest code
+        choices=SITE_CHOICES,
+        blank=True,
+        null=True,
+        help_text="Clinical site where patient is enrolled"
+    )
+
+    # Demographics
+    date_of_birth = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Patient's date of birth"
+    )
+    age = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(120)],
+        help_text="Patient age in years (0–120)"
+    )
+
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
         ('O', 'Other'),
         ('U', 'Unknown'),
     )
-    
-    SITE_CHOICES = (
-        ('SITE001', 'Site 001 - City Hospital'),
-        ('SITE002', 'Site 002 - University Medical Center'),
-        ('SITE003', 'Site 003 - Regional Clinic'),
-        ('SITE004', 'Site 004 - Private Practice'),
-        # Add your real sites
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        blank=True,
+        help_text="Patient gender"
     )
-    site = models.CharField(max_length=200, choices=SITE_CHOICES, blank=True, null=True)
-    
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
-    
-    ethnicity = models.CharField(max_length=100, blank=True)
-    race = models.CharField(max_length=100, blank=True)
-    
+
+    ethnicity = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Ethnicity (e.g., Hispanic or Latino)"
+    )
+    race = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Race (e.g., White, Asian, Black)"
+    )
+
+    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.patient_id
-
     class Meta:
         verbose_name_plural = "Demographics"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        """Human-readable representation"""
+        site_name = f" ({self.get_site_display()})" if self.site else ""
+        return f"{self.patient_id}{site_name}"
+
+    def get_absolute_url(self):
+        """URL to edit this patient"""
+        return reverse('nimregenin:patient_update', kwargs={'pk': self.pk})
 
 
 class Screening(models.Model):

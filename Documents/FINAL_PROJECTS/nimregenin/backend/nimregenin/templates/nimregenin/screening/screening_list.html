@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<a href="{% url 'nimregenin:screening_create' %}" class="btn btn-success mb-3">
+    <i class="bi bi-plus-lg"></i> Add Screening
+</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Patient ID</th>
+            <th>Screening Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for screening in screenings %}
+        <tr>
+            <td><strong>{{ screening.patient.patient_id }}</strong></td>
+            <td>{{ screening.screening_date|date:"M d, Y" }}</td>
+            <td>
+                <span class="badge bg-{% if screening.screening_status == 'PASS' %}success{% else %}danger{% endif %}">
+                    {{ screening.get_screening_status_display }}
+                </span>
+            </td>
+            <td>
+                <a href="{% url 'nimregenin:screening_update' screening.pk %}" class="btn btn-sm btn-primary">
+                    Edit
+                </a>
+                <a href="{% url 'nimregenin:screening_delete' screening.pk %}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Delete this screening record?')">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No screening records yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

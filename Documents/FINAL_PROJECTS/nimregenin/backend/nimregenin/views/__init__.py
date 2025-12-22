@@ -9,6 +9,7 @@ from .screening import *
 from .enrollment import *
 from .protocol import TemplateDetailsView   
 
+
 __all__ = [
     # dashboard views...
     'HomeView',
@@ -24,6 +25,7 @@ __all__ = [
     # screening views...
     'ScreeningListView',
     'ScreeningCreateUpdateView',
+    'ScreeningDeleteView',
     
     # enrollment views...
     'EnrollmentListView',

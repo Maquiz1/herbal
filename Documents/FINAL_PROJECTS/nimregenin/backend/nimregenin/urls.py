@@ -1,9 +1,17 @@
 from django.urls import path
 from .views import (
     HomeView,
+    
+    # Patient Views
     PatientListView, DemographicCreateUpdateView,PatientVisitDetailView,
-    ScreeningListView, ScreeningCreateUpdateView,
+    
+    # Screening Views
+    ScreeningListView, ScreeningCreateUpdateView,ScreeningDeleteView,
+    
+    # Enrollment Views    
     EnrollmentListView, EnrollmentCreateUpdateView,
+    
+    # CRF Views
     CRF1ListView, CRF1CreateUpdateView,
     CRF2ListView, CRF2CreateUpdateView,
     CRF3ListView, CRF3CreateUpdateView,
@@ -42,6 +50,7 @@ urlpatterns = [
     path('screening/', ScreeningListView.as_view(), name='screening_list'),
     path('screening/new/', ScreeningCreateUpdateView.as_view(), name='screening_create'),
     path('screening/<int:pk>/edit/', ScreeningCreateUpdateView.as_view(), name='screening_update'),
+    path('screening/<int:pk>/delete/', ScreeningDeleteView.as_view(), name='screening_delete'),
 
     # Enrollment
     path('enrollment/', EnrollmentListView.as_view(), name='enrollment_list'),
