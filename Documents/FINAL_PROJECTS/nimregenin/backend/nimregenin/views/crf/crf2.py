@@ -15,7 +15,7 @@ class CRF2ListView(LoginRequiredMixin, TemplateView):
     """
     Displays a list of all CRF2 (Physical Examination) records.
     """
-    template_name = 'nimregenin/crf2_list.html'
+    template_name = 'nimregenin/crf/crf2/crf2_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,7 +42,7 @@ class CRF2CreateUpdateView(CreateUpdateView, LoginRequiredMixin):
         'heart_rate',
         'physical_exam_findings',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf2/crf2_form.html'
 
     def get_success_url(self):
         visit = self.object.visit

@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'nimregenin',  # <-- Add this line
     'silk',
+    'locations',  # For hierarchical location data
 ]
 
 MIDDLEWARE = [

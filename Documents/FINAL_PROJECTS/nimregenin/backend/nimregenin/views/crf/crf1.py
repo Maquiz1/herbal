@@ -17,7 +17,7 @@ class CRF1ListView(LoginRequiredMixin, TemplateView):
     """
     Displays a list of all CRF1 (Baseline) records.
     """
-    template_name = 'nimregenin/crf1_list.html'
+    template_name = 'nimregenin/crf/crf1/crf1_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,7 +42,7 @@ class CRF1CreateUpdateView(CreateUpdateView, LoginRequiredMixin):
         'medical_history',
         'concomitant_medications',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf1/crf1_form.html'
 
 
     def form_valid(self, form):

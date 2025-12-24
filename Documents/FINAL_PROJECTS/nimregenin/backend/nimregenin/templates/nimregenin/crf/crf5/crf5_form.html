@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-capsule me-2"></i>
+                {{ title }}
+            </h2>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-prescription2 me-2"></i>
+                        Concomitant Medications Update
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Patient & Visit Info -->
+                        <div class="row mb-4 p-3 bg-light rounded">
+                            <div class="col-md-6">
+                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"Current Visit" }}
+                            </div>
+                        </div>
+
+                        <!-- Visit Date -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.visit_date.label_tag }}
+                                    {{ form.visit_date }}
+                                    <small class="text-muted">Date medication status was reviewed</small>
+                                    {% if form.visit_date.errors %}
+                                        <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medication Name -->
+                        <div class="mb-4">
+                            {{ form.medication_name.label_tag }}
+                            {{ form.medication_name }}
+                            <small class="text-muted">Generic or brand name (e.g., Aspirin, Lisinopril)</small>
+                            {% if form.medication_name.errors %}
+                                <div class="text-danger mt-1">{{ form.medication_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Dose -->
+                        <div class="mb-4">
+                            {{ form.dose.label_tag }}
+                            {{ form.dose }}
+                            <small class="text-muted">Dose and frequency (e.g., 81mg daily, 500mg BID)</small>
+                            {% if form.dose.errors %}
+                                <div class="text-danger mt-1">{{ form.dose.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Start and End Dates -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.start_date.label_tag }}
+                                    {{ form.start_date }}
+                                    <small class="text-muted">When medication was started</small>
+                                    {% if form.start_date.errors %}
+                                        <div class="text-danger mt-1">{{ form.start_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.end_date.label_tag }}
+                                    {{ form.end_date }}
+                                    <small class="text-muted">When stopped (leave blank if ongoing)</small>
+                                    {% if form.end_date.errors %}
+                                        <div class="text-danger mt-1">{{ form.end_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Note -->
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Note:</strong> Record all medications taken by the patient during the study period, including over-the-counter drugs, supplements, and herbals.
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
+                            <button type="submit" class="btn btn-info btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Record Medication
+                            </button>
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Guidance -->
+            <div class="mt-4 alert alert-secondary">
+                <i class="bi bi-lightbulb me-2"></i>
+                <strong>Tip:</strong> If the patient is taking multiple medications, record each one separately by saving and creating a new entry.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

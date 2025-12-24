@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-11">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-heart-pulse me-2"></i>
+                {{ title }}
+            </h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Vital Signs & Physical Examination</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Visit Info (Read-only) -->
+                        <div class="row mb-4 p-3 bg-light rounded">
+                            <div class="col-md-6">
+                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"New Visit" }}
+                            </div>
+                        </div>
+
+                        <!-- Vital Signs Section -->
+                        <h5 class="mt-4 mb-3 text-primary border-bottom pb-2">
+                            <i class="bi bi-activity me-2"></i>Vital Signs
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.visit_date.label_tag }}
+                                    {{ form.visit_date }}
+                                    <small class="text-muted">Date of examination</small>
+                                    {% if form.visit_date.errors %}
+                                        <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.systolic_bp.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.systolic_bp }}
+                                        <span class="input-group-text">mmHg</span>
+                                    </div>
+                                    <small class="text-muted">Systolic Blood Pressure</small>
+                                    {% if form.systolic_bp.errors %}
+                                        <div class="text-danger mt-1">{{ form.systolic_bp.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.diastolic_bp.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.diastolic_bp }}
+                                        <span class="input-group-text">mmHg</span>
+                                    </div>
+                                    <small class="text-muted">Diastolic Blood Pressure</small>
+                                    {% if form.diastolic_bp.errors %}
+                                        <div class="text-danger mt-1">{{ form.diastolic_bp.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.heart_rate.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.heart_rate }}
+                                        <span class="input-group-text">bpm</span>
+                                    </div>
+                                    <small class="text-muted">Heart Rate</small>
+                                    {% if form.heart_rate.errors %}
+                                        <div class="text-danger mt-1">{{ form.heart_rate.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Physical Exam Findings -->
+                        <h5 class="mt-5 mb-3 text-primary border-bottom pb-2">
+                            <i class="bi bi-clipboard-pulse me-2"></i>Physical Examination Findings
+                        </h5>
+
+                        <div class="mb-4">
+                            {{ form.physical_exam_findings.label_tag }}
+                            {{ form.physical_exam_findings }}
+                            <small class="text-muted">Summary of physical exam (e.g., "Normal", "Mild edema", etc.)</small>
+                            {% if form.physical_exam_findings.errors %}
+                                <div class="text-danger mt-1">{{ form.physical_exam_findings.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Save Vital Signs
+                            </button>
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

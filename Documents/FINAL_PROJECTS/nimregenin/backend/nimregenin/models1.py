@@ -3,88 +3,216 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 
+
+from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.contrib.auth.models import User
+
+
 class Demographic(models.Model):
     """
-    Patient demographic information.
-    Central model — all other data (screening, enrollment, visits, CRFs) link to this.
+    Comprehensive patient demographic and enrollment tracking model
+    based on the provided schema.
     """
 
-    # Unique identifier
-    patient_id = models.CharField(
-        max_length=50,
-        unique=True,
-        help_text="Unique patient identifier (e.g., PT-001)"
-    )
-
-    # Site assignment
-    SITE_CHOICES = (
-        ('SITE001', 'Site 001 - City Hospital'),
-        ('SITE002', 'Site 002 - University Medical Center'),
-        ('SITE003', 'Site 003 - Regional Clinic'),
-        ('SITE004', 'Site 004 - Private Practice'),
-        # Add more sites as needed
-    )
-    site = models.CharField(
-        max_length=20,  # Matches longest code
-        choices=SITE_CHOICES,
-        blank=True,
-        null=True,
-        help_text="Clinical site where patient is enrolled"
-    )
+    recruitment_date = models.CharField(max_length=12, blank=True, null=True)
+    # Unique identifiers
+    pid = models.CharField(max_length=50, unique=True)
+    # Personal identification
+    hospital_id = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    national_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    # Study-related IDs
+    # Dates
+    previous_date = models.CharField(max_length=12, blank=True, null=True)
+    previous_date2 = models.TextField(blank=True, null=True)  # Could be multiple dates
+    # Name
+    firstname = models.CharField(max_length=16, blank=True, null=True)
+    middlename = models.CharField(max_length=16, blank=True, null=True)
+    lastname = models.CharField(max_length=16, blank=True, null=True)
+    nimregenin = models.CharField(max_length=1, blank=True, null=True)  # Likely a flag (Y/N)
 
     # Demographics
-    date_of_birth = models.DateField(
-        null=True,
-        blank=True,
-        help_text="Patient's date of birth"
-    )
+    dob = models.CharField(max_length=12, blank=True, null=True)  # Stored as string per schema
     age = models.PositiveIntegerField(
-        null=True,
         blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(120)],
-        help_text="Patient age in years (0–120)"
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(120)]
     )
 
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
         ('O', 'Other'),
-        ('U', 'Unknown'),
     )
-    gender = models.CharField(
-        max_length=1,
-        choices=GENDER_CHOICES,
+    gender = models.CharField(max_length=8, choices=GENDER_CHOICES, blank=True, null=True)
+
+    MARITAL_STATUS_CHOICES = (
+        ('S', 'Single'),
+        ('M', 'Married'),
+        ('D', 'Divorced'),
+        ('W', 'Widowed'),
+    )
+    marital_status = models.CharField(max_length=15, choices=MARITAL_STATUS_CHOICES, blank=True, null=True)
+
+    education_level = models.CharField(max_length=25, blank=True, null=True)
+    occupation = models.CharField(max_length=50, blank=True, null=True)
+    workplace = models.CharField(max_length=50, blank=True, null=True)
+
+    # Contact
+    phone_number = models.CharField(
+        max_length=16,
         blank=True,
-        help_text="Patient gender"
+        null=True,
+        validators=[RegexValidator(r'^\+?\d{9,15}$', 'Enter a valid phone number.')]
+    )
+    other_phone = models.CharField(max_length=16, blank=True, null=True)
+
+    # Address
+    region = models.CharField(max_length=255, blank=True, null=True)
+    district = models.CharField(max_length=255, blank=True, null=True)
+    ward = models.CharField(max_length=50, blank=True, null=True)
+    street = models.CharField(max_length=50, blank=True, null=True)
+    block_no = models.CharField(max_length=15, blank=True, null=True)
+
+    # Enrollment & Screening Flags
+    consented = models.BooleanField(default=False)
+    consented_nimregenin = models.BooleanField(default=False)
+    screened = models.BooleanField(default=False)  # '0'/'1' as boolean
+    eligible = models.BooleanField(default=False)
+    eligibility1 = models.BooleanField(default=False)
+    eligibility2 = models.BooleanField(default=False)
+    enrolled = models.BooleanField(default=False)
+    end_study = models.BooleanField(default=False)
+
+    # Treatment & Visit Tracking
+    pt_type = models.CharField(max_length=1, blank=True, null=True)  # e.g., N=New, R=Return
+    patient_category = models.CharField(max_length=2, default='0')
+    treatment_type = models.CharField(max_length=1, blank=True, null=True)
+    treatment_type2 = models.CharField(max_length=2, blank=True, null=True)
+
+    total_cycle = models.CharField(max_length=255, blank=True, null=True)
+    cycle_number = models.CharField(max_length=255, blank=True, null=True)
+
+    # Staff & Site
+    SITE_CHOICES = (
+        ('1', 'MNH'),
+        ('2', 'ORCI'),
+    )
+    site = models.PositiveIntegerField(choices=SITE_CHOICES)    
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='patients_enrolled'
     )
 
-    ethnicity = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Ethnicity (e.g., Hispanic or Latino)"
-    )
-    race = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Race (e.g., White, Asian, Black)"
-    )
+    # Status & Comments
+    status = models.PositiveIntegerField(default=0)  # Likely a status code
+    comments = models.TextField(blank=True, null=True)
 
     # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name_plural = "Demographics"
-        ordering = ['-created_at']
+        verbose_name = "Patient Demographic"
+        verbose_name_plural = "Patient Demographics"
+        ordering = ['-created_on']
 
     def __str__(self):
-        """Human-readable representation"""
-        site_name = f" ({self.get_site_display()})" if self.site else ""
-        return f"{self.patient_id}{site_name}"
+        name = f"{self.firstname or ''} {self.middlename or ''} {self.lastname or ''}".strip()
+        if name:
+            return f"{name} ({self.participant_id or self.study_id or 'No ID'})"
+        return self.participant_id or self.study_id or f"Patient {self.pk}"
+
+    def get_full_name(self):
+        return f"{self.firstname or ''} {self.middlename or ''} {self.lastname or ''}".strip() or "Unnamed Patient"
 
     def get_absolute_url(self):
-        """URL to edit this patient"""
         return reverse('nimregenin:patient_update', kwargs={'pk': self.pk})
+    
+# class Demographic(models.Model):
+#     """
+#     Patient demographic information.
+#     Central model — all other data (screening, enrollment, visits, CRFs) link to this.
+#     """
+
+#     # Unique identifier
+#     patient_id = models.CharField(
+#         max_length=50,
+#         unique=True,
+#         help_text="Unique patient identifier (e.g., PT-001)"
+#     )
+
+#     # Site assignment
+#     SITE_CHOICES = (
+#         ('SITE001', 'Site 001 - City Hospital'),
+#         ('SITE002', 'Site 002 - University Medical Center'),
+#         ('SITE003', 'Site 003 - Regional Clinic'),
+#         ('SITE004', 'Site 004 - Private Practice'),
+#         # Add more sites as needed
+#     )
+#     site = models.CharField(
+#         max_length=20,  # Matches longest code
+#         choices=SITE_CHOICES,
+#         blank=True,
+#         null=True,
+#         help_text="Clinical site where patient is enrolled"
+#     )
+
+#     # Demographics
+#     date_of_birth = models.DateField(
+#         null=True,
+#         blank=True,
+#         help_text="Patient's date of birth"
+#     )
+#     age = models.PositiveIntegerField(
+#         null=True,
+#         blank=True,
+#         validators=[MinValueValidator(0), MaxValueValidator(120)],
+#         help_text="Patient age in years (0–120)"
+#     )
+
+#     GENDER_CHOICES = (
+#         ('M', 'Male'),
+#         ('F', 'Female'),
+#         ('O', 'Other'),
+#         ('U', 'Unknown'),
+#     )
+#     gender = models.CharField(
+#         max_length=1,
+#         choices=GENDER_CHOICES,
+#         blank=True,
+#         help_text="Patient gender"
+#     )
+
+#     ethnicity = models.CharField(
+#         max_length=100,
+#         blank=True,
+#         help_text="Ethnicity (e.g., Hispanic or Latino)"
+#     )
+#     race = models.CharField(
+#         max_length=100,
+#         blank=True,
+#         help_text="Race (e.g., White, Asian, Black)"
+#     )
+
+#     # Timestamps
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+
+#     class Meta:
+#         verbose_name_plural = "Demographics"
+#         ordering = ['-created_at']
+
+#     def __str__(self):
+#         """Human-readable representation"""
+#         site_name = f" ({self.get_site_display()})" if self.site else ""
+#         return f"{self.patient_id}{site_name}"
+
+#     def get_absolute_url(self):
+#         """URL to edit this patient"""
+#         return reverse('nimregenin:patient_update', kwargs={'pk': self.pk})
 
 
 class Screening(models.Model):

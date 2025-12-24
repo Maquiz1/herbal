@@ -15,7 +15,7 @@ class CRF6ListView(LoginRequiredMixin, TemplateView):
     """
     Displays a list of all CRF6 (Efficacy Assessment) records.
     """
-    template_name = 'nimregenin/crf6_list.html'
+    template_name = 'nimregenin/crf/crf6/crf6_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,7 +42,7 @@ class CRF6CreateUpdateView(CreateUpdateView,LoginRequiredMixin):
         'secondary_endpoint_score',
         'clinician_assessment',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf6/crf6_form.html'
 
     def get_success_url(self):
         """

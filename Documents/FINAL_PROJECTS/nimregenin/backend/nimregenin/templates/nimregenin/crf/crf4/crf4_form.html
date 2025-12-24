@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ title }}
+            </h2>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-exclamation me-2"></i>
+                        Adverse Event Reporting
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Patient & Visit Info -->
+                        <div class="row mb-4 p-3 bg-light rounded">
+                            <div class="col-md-6">
+                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"Current Visit" }}
+                            </div>
+                        </div>
+
+                        <!-- Visit Date -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.visit_date.label_tag }}
+                                    {{ form.visit_date }}
+                                    <small class="text-muted">Date adverse event was observed or reported</small>
+                                    {% if form.visit_date.errors %}
+                                        <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Adverse Event Description -->
+                        <div class="mb-4">
+                            {{ form.ae_description.label_tag }}
+                            {{ form.ae_description }}
+                            <small class="text-muted">Describe the adverse event in detail (e.g., headache, nausea, rash)</small>
+                            {% if form.ae_description.errors %}
+                                <div class="text-danger mt-1">{{ form.ae_description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Severity -->
+                        <div class="mb-4">
+                            {{ form.severity.label_tag }}
+                            <div class="row g-3">
+                                {% for value, label in form.severity.field.choices %}
+                                <div class="col-md-4">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="severity" id="severity_{{ value }}" value="{{ value }}"
+                                               {% if form.severity.value == value %}checked{% endif %}>
+                                        <label class="form-check-label" for="severity_{{ value }}">
+                                            {% if value == 'MILD' %}
+                                                <span class="badge bg-success">{{ label }}</span>
+                                            {% elif value == 'MODERATE' %}
+                                                <span class="badge bg-warning text-dark">{{ label }}</span>
+                                            {% elif value == 'SEVERE' %}
+                                                <span class="badge bg-danger">{{ label }}</span>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.severity.errors %}
+                                <div class="text-danger mt-1">{{ form.severity.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Serious Adverse Event -->
+                        <div class="mb-4">
+                            {{ form.serious.label_tag }}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="serious" id="id_serious"
+                                       {% if form.serious.value %}checked{% endif %}>
+                                <label class="form-check-label text-danger fw-bold" for="id_serious">
+                                    Yes, this is a Serious Adverse Event (SAE)
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                Check if event resulted in death, life-threatening, hospitalization, disability, or congenital anomaly.
+                            </small>
+                            {% if form.serious.errors %}
+                                <div class="text-danger mt-1">{{ form.serious.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Outcome -->
+                        <div class="mb-4">
+                            {{ form.outcome.label_tag }}
+                            {{ form.outcome }}
+                            <small class="text-muted">Current status of the adverse event</small>
+                            {% if form.outcome.errors %}
+                                <div class="text-danger mt-1">{{ form.outcome.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Record Adverse Event
+                            </button>
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Note -->
+            <div class="mt-4 alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Important:</strong> All adverse events must be reported promptly per protocol. Serious events require immediate notification to the sponsor.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

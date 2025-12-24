@@ -101,9 +101,9 @@ class VisitInline(admin.TabularInline):
 
 @admin.register(Demographic)
 class DemographicAdmin(admin.ModelAdmin):
-    list_display = ['patient_id', 'age', 'get_gender_display', 'created_at', 'enrollment_status', 'visit_progress']
+    list_display = ['pid', 'age', 'get_gender_display', 'created_at', 'visit_progress']
     list_filter = ['gender', 'created_at']
-    search_fields = ['patient_id']
+    search_fields = ['pid']
     inlines = [VisitInline]
 
     def enrollment_status(self, obj):

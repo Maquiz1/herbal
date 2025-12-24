@@ -15,7 +15,7 @@ class CRF3ListView(LoginRequiredMixin, TemplateView):
     """
     Displays a list of all CRF3 (Laboratory Results) records.
     """
-    template_name = 'nimregenin/crf3_list.html'
+    template_name = 'nimregenin/crf/crf3/crf3_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,7 +44,7 @@ class CRF3CreateUpdateView(CreateUpdateView, LoginRequiredMixin):
         'alt',
         'ast',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf3/crf3_form.html'
 
     def get_success_url(self):
         """

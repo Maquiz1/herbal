@@ -1,89 +1,112 @@
-from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
-from django.views.generic.edit import CreateView, UpdateView
-from django.shortcuts import get_object_or_404, redirect
+"""
+Enrollment Views: List, Create/Update, and Delete
+"""
+
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django import forms
-from nimregenin.models import (
-    Demographic, Screening, Enrollment,
-    CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
-)
-# from backend.nimregenin.models import Visit
-from django.db import models
-from django.db.models import Q, Count
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q
-from nimregenin.models import Demographic, Screening, Enrollment, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from django.views.generic import TemplateView
+from django.contrib import messages
 
-from django.views.generic import DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from nimregenin.models import Demographic, Visit, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from .create_update import CreateUpdateView
+from .delete import CRFDeleteView
+from ..models import Enrollment, Demographic, Visit
 
-from django.utils import timezone
-from datetime import timedelta
 
-from django.http import HttpResponse
-from django.views import View
-from django.utils import timezone
-from datetime import timedelta
-import csv
-
-from django.http import HttpResponse
-from django.views import View
-from django.utils import timezone
-from django.conf import settings
-from datetime import timedelta
-from twilio.twiml.voice_response import VoiceResponse
-from nimregenin.models import Visit
-from .create_update import CreateUpdateView  # We'll create this base next
-
-# Screening
-class ScreeningListView(LoginRequiredMixin, TemplateView):
-    template_name = 'nimregenin/screening_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['screenings'] = Screening.objects.all().order_by('-created_at')
-        context['title'] = 'Screening Visits'
-        return context
-    
-    def get_initial(self):
-        initial = super().get_initial()
-        visit_id = self.request.GET.get('visit')
-        if visit_id:
-            initial['visit'] = visit_id
-        return initial
-    
-class ScreeningCreateUpdateView(CreateUpdateView):
-    model = Screening
-    fields = ['patient_id', 'screening_date', 'screening_status', 'failure_reason', 'screened_by']
-    success_url_name = 'nimregenin:screening_list'
-
-# Enrollment
 class EnrollmentListView(LoginRequiredMixin, TemplateView):
-    template_name = 'nimregenin/enrollment_list.html'
+    """
+    List all enrollment records with patient context.
+    """
+    template_name = 'nimregenin/enrollment/enrollment_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['enrollments'] = Enrollment.objects.all().order_by('-created_at')
-        context['title'] = 'Enrollment and Randomization'
+        context['enrollments'] = (
+            Enrollment.objects
+            .select_related('patient')
+            .order_by('-enrollment_date')
+        )
+        context['title'] = 'Enrollment Records'
         return context
-    
-    def get_initial(self):
-        initial = super().get_initial()
-        visit_id = self.request.GET.get('visit')
-        if visit_id:
-            initial['visit'] = visit_id
-        return initial
-    
-class EnrollmentCreateUpdateView(CreateUpdateView):
+
+
+class EnrollmentCreateUpdateView(CreateUpdateView,LoginRequiredMixin, ):
+    """
+    Create or Update an Enrollment record.
+    OneToOne with Demographic.
+    """
     model = Enrollment
-    fields = ['patient_id', 'enrollment_date', 'study_id', 'randomization_number', 'status', 'enrolled_by']
-    success_url_name = 'nimregenin:enrollment_list'
+    fields = [
+        'patient',
+        'enrollment_date',
+        'study_id',
+        'randomization_number',
+        'status',
+        'enrolled_by',
+    ]
+    template_name = 'nimregenin/crf_form.html'
+
+    def get_success_url(self):
+        """
+        After save, go to the patient's baseline visit if it exists.
+        Fallback: patient list.
+        """
+        enrollment = self.object
+        patient = enrollment.patient
+
+        # Find baseline visit (Day 0)
+        baseline_visit = patient.visits.filter(visit_type='BASELINE').first()
+        if baseline_visit:
+            return reverse_lazy(
+                'nimregenin:patient_visit_detail',
+                kwargs={
+                    'patient_pk': patient.pk,
+                    'visit_pk': baseline_visit.pk
+                }
+            )
+        return reverse_lazy('nimregenin:patient_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object:
+            context['title'] = f"Edit Enrollment - {self.object.patient.patient_id}"
+        else:
+            patient_id = self.request.GET.get('patient')
+            patient = None
+            if patient_id:
+                try:
+                    patient = Demographic.objects.get(pk=patient_id)
+                except Demographic.DoesNotExist:
+                    pass
+            display = patient.patient_id if patient else "Patient"
+            context['title'] = f"Enroll Patient - {display}"
+        return context
+
+    def get_form(self, form_class=None):
+        """
+        Limit patient choices to those who are screened but not yet enrolled.
+        """
+        form = super().get_form(form_class)
+        form.fields['patient'].queryset = Demographic.objects.filter(
+            screening__screening_status='PASS',
+            enrollment__isnull=True
+        )
+        return form
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Patient {form.instance.patient.patient_id} successfully enrolled.")
+        return super().form_valid(form)
 
 
+class EnrollmentDeleteView(CRFDeleteView):
+    """
+    Delete an enrollment record (use with caution — breaks data integrity).
+    """
+    model = Enrollment
 
+    def get_success_url(self):
+        patient = self.object.patient
+        return reverse_lazy('nimregenin:patient_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.warning(request, f"Enrollment for {self.get_object().patient.patient_id} has been deleted.")
+        return super().delete(request, *args, **kwargs)

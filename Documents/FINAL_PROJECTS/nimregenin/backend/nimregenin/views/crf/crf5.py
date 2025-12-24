@@ -15,7 +15,7 @@ class CRF5ListView(LoginRequiredMixin, TemplateView):
     """
     Displays a list of all CRF5 (Adverse Events) records.
     """
-    template_name = 'nimregenin/crf5_list.html'
+    template_name = 'nimregenin/crf/crf5/crf5_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,7 +43,7 @@ class CRF5CreateUpdateView(CreateUpdateView,LoginRequiredMixin):
         'serious',
         'outcome',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf5/crf5_form.html'
 
     def get_success_url(self):
         """

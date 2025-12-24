@@ -3,7 +3,7 @@
 <div class="bg-dark border-end" id="sidebar-wrapper">
     <div class="sidebar-heading bg-primary text-white py-3 text-center">
         <i class="bi bi-hospital fs-3"></i><br>
-        <strong>NIM Regenin</strong>
+        <strong>Nimregenin</strong>
     </div>
     <div class="list-group list-group-flush">
         <a href="{% url 'nimregenin:home' %}" 
@@ -39,7 +39,11 @@
                 <li><a class="dropdown-item text-white" href="{% url 'nimregenin:crf7_list' %}">CRF7 - Completion</a></li>
             </ul>
         </div>
-
+    <!-- Locations -->
+    <a href="{% url 'locations:country-list' %}"
+        class="{% if request.resolver_match.url_name == 'country-list' %}active{% endif %}">
+        <i class="fas fa-globe-africa"></i><span> Countries</span>
+    </a>
         {% if user.is_staff %}
         <a href="{% url 'admin:index' %}" 
            class="list-group-item list-group-item-action bg-dark text-white mt-4">

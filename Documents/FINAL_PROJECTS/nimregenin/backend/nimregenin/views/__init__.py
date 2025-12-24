@@ -1,4 +1,4 @@
-from .demographic import *  # PatientListView, PatientVisitDetailView, etc.
+from .demographic.demographic_form import *  # PatientListView, PatientVisitDetailView, etc.
 from .reminders import VoiceReminderTwiMLView
 from .crf import *
 from .dashboard import HomeView
@@ -6,7 +6,7 @@ from .create_update import CreateUpdateView
 from .export import OverduePatientsCSVExportView
 from .delete import CRFDeleteView
 from .screening import ScreeningListView, ScreeningCreateUpdateView, ScreeningDeleteView
-from .enrollment import EnrollmentListView, EnrollmentCreateUpdateView
+from .enrollment import EnrollmentListView, EnrollmentCreateUpdateView, EnrollmentDeleteView
 from .protocol import TemplateDetailsView   
 
 
@@ -24,7 +24,7 @@ __all__ = [
     'ScreeningListView','ScreeningCreateUpdateView','ScreeningDeleteView',
     
     # enrollment views...
-    'EnrollmentListView','EnrollmentCreateUpdateView',
+    'EnrollmentListView','EnrollmentCreateUpdateView','EnrollmentDeleteView',
     
     # protocol views...
     'TemplateDetailsView',

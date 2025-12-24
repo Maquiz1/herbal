@@ -15,7 +15,7 @@ class CRF4ListView(LoginRequiredMixin, TemplateView):
     """
     Displays a list of all CRF4 (Concomitant Medications) records.
     """
-    template_name = 'nimregenin/crf4_list.html'
+    template_name = 'nimregenin/crf/crf4/crf4_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,7 +43,7 @@ class CRF4CreateUpdateView(CreateUpdateView, LoginRequiredMixin):
         'start_date',
         'end_date',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf4/crf4_form.html'
 
     def get_success_url(self):
         """

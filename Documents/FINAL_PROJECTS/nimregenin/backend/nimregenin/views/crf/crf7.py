@@ -16,7 +16,7 @@ class CRF7ListView(LoginRequiredMixin, TemplateView):
     Displays a list of all CRF7 (Study Completion/Termination) records.
     Typically only at final visit or early termination.
     """
-    template_name = 'nimregenin/crf7_list.html'
+    template_name = 'nimregenin/crf/crf7/crf7_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,7 +43,7 @@ class CRF7CreateUpdateView(CreateUpdateView, LoginRequiredMixin):
         'termination_reason',
         'study_completion_status',
     ]
-    template_name = 'nimregenin/crf_form.html'
+    template_name = 'nimregenin/crf/crf7/crf7_form.html'
 
     def get_success_url(self):
         """

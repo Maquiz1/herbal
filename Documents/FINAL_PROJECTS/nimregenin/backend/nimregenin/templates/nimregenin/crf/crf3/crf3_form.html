@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-vials me-2"></i>
+                {{ title }}
+            </h2>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Laboratory Test Results</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Patient & Visit Info (Read-only) -->
+                        <div class="row mb-4 p-3 bg-light rounded">
+                            <div class="col-md-6">
+                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"New Visit" }}
+                            </div>
+                        </div>
+
+                        <!-- Visit Date -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    {{ form.visit_date.label_tag }}
+                                    {{ form.visit_date }}
+                                    <small class="text-muted">Date blood/sample was drawn</small>
+                                    {% if form.visit_date.errors %}
+                                        <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hematology -->
+                        <h5 class="mt-5 mb-4 text-primary border-bottom pb-2">
+                            <i class="bi bi-droplet me-2"></i>Hematology
+                        </h5>
+
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.hemoglobin.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.hemoglobin }}
+                                        <span class="input-group-text">g/dL</span>
+                                    </div>
+                                    <small class="text-muted">Hemoglobin</small>
+                                    {% if form.hemoglobin.errors %}
+                                        <div class="text-danger mt-1">{{ form.hemoglobin.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.wbc.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.wbc }}
+                                        <span class="input-group-text">×10³/μL</span>
+                                    </div>
+                                    <small class="text-muted">White Blood Cell Count</small>
+                                    {% if form.wbc.errors %}
+                                        <div class="text-danger mt-1">{{ form.wbc.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.platelets.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.platelets }}
+                                        <span class="input-group-text">×10³/μL</span>
+                                    </div>
+                                    <small class="text-muted">Platelet Count</small>
+                                    {% if form.platelets.errors %}
+                                        <div class="text-danger mt-1">{{ form.platelets.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chemistry -->
+                        <h5 class="mt-5 mb-4 text-primary border-bottom pb-2">
+                            <i class="bi bi-flask me-2"></i>Chemistry
+                        </h5>
+
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.creatinine.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.creatinine }}
+                                        <span class="input-group-text">mg/dL</span>
+                                    </div>
+                                    <small class="text-muted">Serum Creatinine</small>
+                                    {% if form.creatinine.errors %}
+                                        <div class="text-danger mt-1">{{ form.creatinine.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.alt.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.alt }}
+                                        <span class="input-group-text">U/L</span>
+                                    </div>
+                                    <small class="text-muted">ALT (SGPT)</small>
+                                    {% if form.alt.errors %}
+                                        <div class="text-danger mt-1">{{ form.alt.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.ast.label_tag }}
+                                    <div class="input-group">
+                                        {{ form.ast }}
+                                        <span class="input-group-text">U/L</span>
+                                    </div>
+                                    <small class="text-muted">AST (SGOT)</small>
+                                    {% if form.ast.errors %}
+                                        <div class="text-danger mt-1">{{ form.ast.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Save Lab Results
+                            </button>
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

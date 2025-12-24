@@ -13,4 +13,6 @@ urlpatterns = [
     
     # App URLs - Home page and future views
     path('', include('nimregenin.urls')),  # This makes '' (root) go to nimregenin home
+    
+    path('locations/', include('locations.urls')),  # ← Add this line
 ]
