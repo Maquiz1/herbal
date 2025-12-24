@@ -7,25 +7,16 @@ class CRF7Form(forms.ModelForm):
         model = CRF7
         fields = [
             'visit',
-            'visit_date',
-            'height_cm',
-            'weight_kg',
-            'medical_history',
-            'concomitant_medications',
+            'completion_date',
+            'early_termination',
+            'termination_reason',
+            'study_completion_status',
         ]
         widgets = {
-            'visit_date': forms.DateInput(attrs={'type': 'date'}),
-            'medical_history': forms.Textarea(attrs={'rows': 4}),
-            'concomitant_medications': forms.Textarea(attrs={'rows': 3}),
+            'completion_date': forms.DateInput(attrs={'type': 'date'}),
+            'termination_reason': forms.Textarea(attrs={'rows': 3}),
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        height = cleaned_data.get('height_cm')
-        weight = cleaned_data.get('weight_kg')
-
-        if height and weight and height > 0:
-            from decimal import Decimal
-            bmi = Decimal(weight) / ((Decimal(height) / 100) ** 2)
-            cleaned_data['bmi'] = round(bmi, 1)
-        return cleaned_data
+        help_texts = {
+            'early_termination': 'Check if patient withdrew before study end',
+            'termination_reason': 'Required if early termination',
+        }

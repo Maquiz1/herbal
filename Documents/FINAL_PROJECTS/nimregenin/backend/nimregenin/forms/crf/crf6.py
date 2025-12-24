@@ -8,24 +8,15 @@ class CRF6Form(forms.ModelForm):
         fields = [
             'visit',
             'visit_date',
-            'height_cm',
-            'weight_kg',
-            'medical_history',
-            'concomitant_medications',
+            'primary_endpoint_score',
+            'secondary_endpoint_score',
+            'clinician_assessment',
         ]
         widgets = {
             'visit_date': forms.DateInput(attrs={'type': 'date'}),
-            'medical_history': forms.Textarea(attrs={'rows': 4}),
-            'concomitant_medications': forms.Textarea(attrs={'rows': 3}),
+            'clinician_assessment': forms.Textarea(attrs={'rows': 4}),
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        height = cleaned_data.get('height_cm')
-        weight = cleaned_data.get('weight_kg')
-
-        if height and weight and height > 0:
-            from decimal import Decimal
-            bmi = Decimal(weight) / ((Decimal(height) / 100) ** 2)
-            cleaned_data['bmi'] = round(bmi, 1)
-        return cleaned_data
+        help_texts = {
+            'primary_endpoint_score': 'Main outcome measure (e.g., symptom score change)',
+            'secondary_endpoint_score': 'Supporting measure (e.g., quality of life)',
+        }

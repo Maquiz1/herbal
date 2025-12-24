@@ -8,24 +8,17 @@ class CRF5Form(forms.ModelForm):
         fields = [
             'visit',
             'visit_date',
-            'height_cm',
-            'weight_kg',
-            'medical_history',
-            'concomitant_medications',
+            'medication_name',
+            'dose',
+            'start_date',
+            'end_date',
         ]
         widgets = {
             'visit_date': forms.DateInput(attrs={'type': 'date'}),
-            'medical_history': forms.Textarea(attrs={'rows': 4}),
-            'concomitant_medications': forms.Textarea(attrs={'rows': 3}),
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        height = cleaned_data.get('height_cm')
-        weight = cleaned_data.get('weight_kg')
-
-        if height and weight and height > 0:
-            from decimal import Decimal
-            bmi = Decimal(weight) / ((Decimal(height) / 100) ** 2)
-            cleaned_data['bmi'] = round(bmi, 1)
-        return cleaned_data
+        help_texts = {
+            'dose': 'e.g., 81mg daily, 500mg BID',
+            'end_date': 'Leave blank if ongoing',
+        }

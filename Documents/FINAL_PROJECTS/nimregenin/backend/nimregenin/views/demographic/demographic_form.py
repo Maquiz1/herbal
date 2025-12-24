@@ -7,23 +7,17 @@ from ..create_update import CreateUpdateView
 from ...models import Demographic
 from ...forms import DemographicForm
 
-class DemographicCreateUpdateView(LoginRequiredMixin, CreateUpdateView):
-    """
-    Create and Update view for patient demographics using the full model.
-    """
+class DemographicCreateUpdateView(CreateUpdateView, LoginRequiredMixin):
     model = Demographic
-    form_class = DemographicForm  # Use custom form
-    template_name = 'nimregenin/demographic_form.html'  # Custom template
+    form_class = DemographicForm           # ← use the form instead of fields
+    template_name = 'nimregenin/demographic/demographic_form.html'
 
     def get_success_url(self):
         return reverse_lazy('nimregenin:patient_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.object:
-            context['title'] = f"Edit Patient - {self.object.pid}"
-        else:
-            context['title'] = "Register New Patient"
+        context['title'] = "Edit Patient" if self.object else "Add New Patient"
         return context
 
     def form_valid(self, form):

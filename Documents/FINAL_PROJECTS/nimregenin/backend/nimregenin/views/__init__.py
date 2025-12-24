@@ -1,4 +1,4 @@
-from .demographic.demographic_form import *  # PatientListView, PatientVisitDetailView, etc.
+from .demographic import *  # PatientListView, PatientVisitDetailView, etc.
 from .reminders import VoiceReminderTwiMLView
 from .crf import *
 from .dashboard import HomeView

@@ -8,24 +8,27 @@ class CRF2Form(forms.ModelForm):
         fields = [
             'visit',
             'visit_date',
-            'height_cm',
-            'weight_kg',
-            'medical_history',
-            'concomitant_medications',
+            'systolic_bp',
+            'diastolic_bp',
+            'heart_rate',
+            'physical_exam_findings',
         ]
         widgets = {
             'visit_date': forms.DateInput(attrs={'type': 'date'}),
-            'medical_history': forms.Textarea(attrs={'rows': 4}),
-            'concomitant_medications': forms.Textarea(attrs={'rows': 3}),
+            'physical_exam_findings': forms.Textarea(attrs={'rows': 4}),
+        }
+        help_texts = {
+            'systolic_bp': 'Systolic blood pressure in mmHg',
+            'diastolic_bp': 'Diastolic blood pressure in mmHg',
+            'heart_rate': 'Heart rate in beats per minute',
+            'physical_exam_findings': 'Summary of physical examination (e.g., "Normal", "Mild edema")',
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        height = cleaned_data.get('height_cm')
-        weight = cleaned_data.get('weight_kg')
+        systolic = cleaned_data.get('systolic_bp')
+        diastolic = cleaned_data.get('diastolic_bp')
 
-        if height and weight and height > 0:
-            from decimal import Decimal
-            bmi = Decimal(weight) / ((Decimal(height) / 100) ** 2)
-            cleaned_data['bmi'] = round(bmi, 1)
+        if systolic and diastolic and systolic <= diastolic:
+            raise forms.ValidationError("Systolic BP must be greater than diastolic BP.")
         return cleaned_data
