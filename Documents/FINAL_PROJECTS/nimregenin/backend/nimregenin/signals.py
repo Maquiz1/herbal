@@ -1,67 +1,50 @@
-from django.db.models.signals import post_save, post_delete
+# nimregenin/signals.py
+
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-from .models import Visit, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from django.utils import timezone
+from datetime import timedelta
+from .models import Enrollment, Visit
 
+@receiver(pre_save, sender=Enrollment)
+def track_enrollment_date_change(sender, instance, **kwargs):
+    if instance.pk:
+        # On update, check if date changed
+        old_instance = Enrollment.objects.get(pk=instance.pk)
+        instance._old_enrollment_date = old_instance.enrollment_date
+    else:
+        instance._old_enrollment_date = None
 
-def get_required_crfs_for_visit(visit):
-    """
-    Returns a set of CRF model classes required for the given visit.
-    """
-    required = {CRF2, CRF3, CRF4, CRF5, CRF6}  # Common to all visits
+@receiver(post_save, sender=Enrollment)
+def manage_visit_schedule(sender, instance, created, **kwargs):
+    enrollment_date = instance.enrollment_date
+    enrolled_by = instance.enrolled_by
 
-    if visit.visit_type == 'BASELINE':
-        required.add(CRF1)
-    if visit.visit_type == 'DAY120':
-        required.add(CRF7)
+    visit_schedule = [
+        ('BASELINE', 0),
+        ('DAY7', 7),
+        ('DAY14', 14),
+        ('DAY30', 30),
+        ('DAY60', 60),
+        ('DAY90', 90),
+        ('DAY120', 120),
+    ]
 
-    return required
-
-
-def update_visit_completion(visit):
-    """
-    Check if all required CRFs exist for the visit.
-    If yes → mark visit.completed = True
-    If no → mark False
-    """
-    required_models = get_required_crfs_for_visit(visit)
-
-    all_filled = True
-    for model in required_models:
-        if not model.objects.filter(visit=visit).exists():
-            all_filled = False
-            break
-
-    if all_filled != visit.completed:
-        visit.completed = all_filled
-        visit.save(update_fields=['completed'])
-
-
-@receiver(post_save, sender=CRF1)
-@receiver(post_save, sender=CRF2)
-@receiver(post_save, sender=CRF3)
-@receiver(post_save, sender=CRF4)
-@receiver(post_save, sender=CRF5)
-@receiver(post_save, sender=CRF6)
-@receiver(post_save, sender=CRF7)
-def on_crf_save(sender, instance, **kwargs):
-    """
-    Triggered when any CRF is saved.
-    Updates the related visit's completion status.
-    """
-    if hasattr(instance, 'visit'):
-        update_visit_completion(instance.visit)
-
-
-@receiver(post_delete, sender=CRF1)
-@receiver(post_delete, sender=CRF2)
-@receiver(post_delete, sender=CRF3)
-@receiver(post_delete, sender=CRF4)
-@receiver(post_delete, sender=CRF5)
-@receiver(post_delete, sender=CRF6)
-@receiver(post_delete, sender=CRF7)
-def on_crf_delete(sender, instance, **kwargs):
-    """
-    If a CRF is deleted, the visit should no longer be marked completed.
-    """
-    if hasattr(instance, 'visit'):
-        update_visit_completion(instance.visit)
+    if created:
+        # On create: generate all visits
+        for visit_type, days_offset in visit_schedule:
+            planned_date = enrollment_date + timedelta(days=days_offset)
+            Visit.objects.create(
+                enrollment=instance,
+                visit_type=visit_type,
+                planned_date=planned_date,
+                created_by=enrolled_by
+            )
+    elif instance._old_enrollment_date and instance._old_enrollment_date != enrollment_date:
+        # On update: if date changed, adjust all planned dates
+        date_diff = (enrollment_date - instance._old_enrollment_date).days
+        visits = instance.visits.all()
+        for visit in visits:
+            if visit.planned_date:
+                visit.planned_date += timedelta(days=date_diff)
+            visit.save()

@@ -1,6 +1,7 @@
 from .demographic import *  # PatientListView, PatientVisitDetailView, etc.
 from .screening import *
 from .enrollment import *
+from .visit import *
 from .reminders import VoiceReminderTwiMLView
 from .crf import *
 from .dashboard import *

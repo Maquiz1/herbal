@@ -73,12 +73,18 @@
                             <span class="badge bg-secondary">{{ enrollment.get_status_display }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ enrollment.enrolled_by|default:"—" }}</td>
+                    <td>{{ enrollment.enrolled_by.get_full_name|default:enrollment.enrolled_by.username|default:"—" }}</td>
                     <td>
-                        <a href="{% url 'nimregenin:enrollment_update' enrollment.pk %}"
-                           class="btn btn-sm btn-info">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'nimregenin:enrollment_update' enrollment.pk %}"
+                               class="btn btn-sm btn-info">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="{% url 'nimregenin:visit_list' enrollment.pk %}"
+                               class="btn btn-sm btn-primary ms-1">
+                                <i class="bi bi-calendar3"></i> View Schedule
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

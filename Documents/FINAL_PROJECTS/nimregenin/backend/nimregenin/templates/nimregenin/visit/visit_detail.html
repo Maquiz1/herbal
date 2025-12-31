@@ -1,0 +1,30 @@
+<h4>{{ visit.get_visit_type_display }}</h4>
+
+{% if visit.crf1 %}
+    <a href="{% url 'crf1_update' visit.crf1.pk %}">Edit Baseline</a>
+{% elif visit.visit_type == 'BASELINE' %}
+    <a href="{% url 'crf1_create' %}?visit={{ visit.pk }}">Add Baseline CRF</a>
+{% endif %}
+
+{% if visit.crf2 %}
+    <a href="{% url 'crf2_update' visit.crf2.pk %}">Edit Vital Signs</a>
+{% else %}
+    <a href="{% url 'crf2_create' %}?visit={{ visit.pk }}">Add Vital Signs</a>
+{% endif %}
+
+<!-- Adverse Events -->
+<a href="{% url 'crf4_create' %}?visit={{ visit.pk }}">Report Adverse Event</a>
+<ul>
+{% for ae in visit.crf4_ae.all %}
+    <li>{{ ae.ae_description }} ({{ ae.get_severity_display }})</li>
+{% endfor %}
+</ul>
+
+<!-- CRF6 only on Day 120 -->
+{% if visit.visit_type == 'DAY120' %}
+    {% if visit.crf6 %}
+        <a href="{% url 'crf6_update' visit.crf6.pk %}">Edit Completion</a>
+    {% else %}
+        <a href="{% url 'crf6_create' %}?visit={{ visit.pk }}">Complete Study</a>
+    {% endif %}
+{% endif %}
