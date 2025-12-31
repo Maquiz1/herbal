@@ -109,13 +109,13 @@ class Demographic(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        name = f"{self.firstname or ''} {self.middlename or ''} {self.lastname or ''}".strip()
+        name = f"{self.fname or ''} {self.mname or ''} {self.lname or ''}".strip()
         if name:
-            return f"{name} ({self.participant_id or self.study_id or 'No ID'})"
-        return self.participant_id or self.study_id or f"Patient {self.pk}"
+            return f"{name} ({self.pid or self.study_id or 'No ID'})"
+        return self.pid or self.study_id or f"Patient {self.pk}"
 
     def get_full_name(self):
-        return f"{self.firstname or ''} {self.middlename or ''} {self.lastname or ''}".strip() or "Unnamed Patient"
+        return f"{self.fname or ''} {self.mname or ''} {self.lname or ''}".strip() or "Unnamed Patient"
 
     def get_absolute_url(self):
         return reverse('nimregenin:patient_update', kwargs={'pk': self.pk})

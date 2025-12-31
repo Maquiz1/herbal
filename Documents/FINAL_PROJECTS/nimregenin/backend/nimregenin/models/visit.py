@@ -22,4 +22,4 @@ class Visit(models.Model):
         unique_together = ('patient', 'visit_type')
 
     def __str__(self):
-        return f"{self.get_visit_type_display()} - {self.patient.participant_id}"
+        return f"{self.get_visit_type_display()} - {self.patient.pid}"

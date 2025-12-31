@@ -100,7 +100,7 @@
             <tbody>
                 {% for patient in patients %}
                 <tr>
-                    <td><strong>{{ patient.patient_id }}</strong></td>
+                    <td><strong>{{ patient.pid }}</strong></td>
                     <td>
                         {% if patient.age %}{{ patient.age }} yrs{% endif %}
                         {% if patient.get_gender_display %}<br>/ {{ patient.get_gender_display }}{% endif %}

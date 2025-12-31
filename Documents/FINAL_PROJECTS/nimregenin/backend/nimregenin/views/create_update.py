@@ -19,16 +19,16 @@ class CreateUpdateView(View, LoginRequiredMixin):
 
     Subclasses must define:
         - model: The Django model class
-        - fields: List of field names (or '__all__')
 
     Optional:
         - form_class: Custom ModelForm (overrides dynamic form)
+        - fields: List of field names (required if no form_class)
         - template_name
         - success_url (or override get_success_url)
     """
     model = None
     fields = None
-    form_class = None  # Allows using a custom form instead of dynamic
+    form_class = None
     template_name = 'nimregenin/crf_form.html'
     success_url = None
 
@@ -50,22 +50,22 @@ class CreateUpdateView(View, LoginRequiredMixin):
             return get_object_or_404(self.model, pk=pk)
         return None
 
-    def dispatch(self, request, pk=None, *args, **kwargs):
-        """Store pk from URL for use in get/post."""
-        self.kwargs['pk'] = pk
+    def dispatch(self, request, *args, **kwargs):
+        """Capture pk from URL kwargs."""
+        self.pk = kwargs.get('pk')
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, pk=None, *args, **kwargs):
-        obj = self.get_object(pk)
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object(self.pk)
         form = self.get_form_class()(instance=obj)
         return self.render_form(request, form, obj)
 
-    def post(self, request, pk=None, *args, **kwargs):
-        obj = self.get_object(pk)
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object(self.pk)
         form = self.get_form_class()(request.POST, instance=obj)
         if form.is_valid():
             self.object = form.save()
-            self.form_valid_success(form)  # Hook for messages, etc.
+            self.form_valid_success(form)  # ← Now called!
             return redirect(self.get_success_url())
         return self.render_form(request, form, obj)
 
@@ -85,19 +85,17 @@ class CreateUpdateView(View, LoginRequiredMixin):
         return f"{action} {model_name}"
 
     def get_success_url(self):
-        """Return success URL — override in subclass if needed."""
+        """Return success URL."""
         if self.success_url:
             return self.success_url
-        if self.object:
-            # Try get_absolute_url if model has it
-            if hasattr(self.object, 'get_absolute_url'):
-                return self.object.get_absolute_url()
+        if self.object and hasattr(self.object, 'get_absolute_url'):
+            return self.object.get_absolute_url()
         raise ValueError(f"No success_url defined for {self.__class__.__name__}")
 
     def form_valid_success(self, form):
         """
-        Hook for success actions (e.g., messages).
-        Override or extend in subclasses.
+        Hook called after successful form save.
+        Shows a default success message — can be overridden in subclasses.
         """
         messages.success(
             self.request,

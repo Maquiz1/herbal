@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="mb-4 text-info">
+                <i class="bi bi-person-check me-2"></i>{{ title }}
+            </h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Patient Enrollment Form</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Display selected patient -->
+                        {% if selected_patient %}
+                        <div class="row mb-4 p-3 bg-light rounded border">
+                            <div class="col-md-6">
+                                <strong>Patient ID (PID):</strong>
+                                <span class="fw-bold">{{ selected_patient.pid }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Name:</strong>
+                                {{ selected_patient.fname }} {{ selected_patient.mname }} {{ selected_patient.lname }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Hidden patient field if preselected -->
+                        {{ form.patient }}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.enrollment_date.label_tag }}
+                                {{ form.enrollment_date }}
+                                {% if form.enrollment_date.errors %}
+                                    <div class="text-danger mt-1">{{ form.enrollment_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.enrolled_by.label_tag }}
+                                {{ form.enrolled_by }}
+                                {% if form.enrolled_by.errors %}
+                                    <div class="text-danger mt-1">{{ form.enrolled_by.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.study_id.label_tag }}
+                            {{ form.study_id }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.randomization_number.label_tag }}
+                            {{ form.randomization_number }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.status.label_tag }}
+                            <div class="row g-3 mt-2">
+                                {% for value, label in form.status.field.choices %}
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="status"
+                                               id="status_{{ value }}" value="{{ value }}"
+                                               {% if form.status.value == value %}checked{% endif %}>
+                                        <label class="form-check-label" for="status_{{ value }}">
+                                            {% if value == 'ENROLLED' %}
+                                                <span class="badge bg-primary">{{ label }}</span>
+                                            {% elif value == 'RANDOMIZED' %}
+                                                <span class="badge bg-success">{{ label }}</span>
+                                            {% elif value == 'WITHDRAWN' %}
+                                                <span class="badge bg-danger">{{ label }}</span>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-5">
+                            <button type="submit" class="btn btn-info btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Save Enrollment
+                            </button>
+                            <a href="{% url 'nimregenin:patient_list' %}" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

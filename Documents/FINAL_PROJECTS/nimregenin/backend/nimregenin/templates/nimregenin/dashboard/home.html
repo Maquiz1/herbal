@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}NIM Regenin Registry{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-5 text-primary mb-4">
+                <i class="bi bi-hospital me-3"></i>Welcome to Nimregenin Registry
+            </h1>
+            <p class="lead text-muted">
+                Manage patient demographics, screening, enrollment, and clinical research forms efficiently.
+            </p>
+            <hr class="my-5">
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-primary h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-people fs-3"></i> Total Recruited</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ total_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-success h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-check-circle fs-3"></i> Screened</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ screened_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-warning text-dark h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-clipboard-check fs-3"></i> Eligible</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ eligible_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-info h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-person-check fs-3"></i> Enrolled</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ enrolled_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-danger h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-x-circle fs-3"></i> Terminated</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ terminated_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-secondary h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-person-x fs-3"></i> Lost to Follow-Up</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ ltf_patients }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions / Info -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <p class="text-muted">
+                Use the navigation menu to access patient records, screening logs, enrollment data, and all CRFs.
+            </p>
+            {% if user.is_staff %}
+            <a href="{% url 'admin:index' %}" class="btn btn-outline-dark btn-lg mt-3">
+                <i class="bi bi-gear me-2"></i> Django Admin Panel
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

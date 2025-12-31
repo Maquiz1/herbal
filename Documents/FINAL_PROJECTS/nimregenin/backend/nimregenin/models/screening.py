@@ -15,4 +15,4 @@ class Screening(models.Model):
     screened_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"Screening - {self.patient.participant_id}"
+        return f"Screening - {self.patient.pid}"

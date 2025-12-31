@@ -29,15 +29,21 @@ class DemographicForm(forms.ModelForm):
             'remarks',
         ]
         labels = {
+            'rec_date': 'Recruit Date',
             'pid': 'Patient ID',
             'fname': 'First Name',
+            'mname': 'Middle Name',
             'lname': 'Last Name',
             'dob': 'Date of Birth',
             'age': 'Age (years)',
             'gender': 'Gender',
             'phone_patient': 'Patient Phone Number',
             'phone_relative': 'Relative/Next of Kin Phone',
+            'education': 'Highest Education Level',
+            'marital_status': 'Marital Status',
             'site': 'Study Site',
+            'hid': 'Hospital ID',
+            'nid': 'National ID',
             'remarks': 'Additional Comments',
         }
         help_texts = {  # Optional bonus

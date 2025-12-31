@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="mb-4 text-success">
+                <i class="bi bi-clipboard-check me-2"></i>{{ title }}
+            </h2>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Screening Form</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Display selected patient (when coming from patient list) -->
+                        {% if selected_patient %}
+                        <div class="row mb-4 p-3 bg-light rounded border">
+                            <div class="col-md-6">
+                                <strong>Patient ID (PID):</strong>
+                                <span class="fw-bold">{{ selected_patient.pid }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Name:</strong>
+                                {{ selected_patient.fname }} {{ selected_patient.mname }} {{ selected_patient.lname }}
+                                {% if not selected_patient.fname and not selected_patient.lname %}
+                                    <em class="text-muted">(No name recorded)</em>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Hidden patient field if preselected -->
+                        {{ form.patient }}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.screening_date.label_tag }}
+                                {{ form.screening_date }}
+                                {% if form.screening_date.errors %}
+                                    <div class="text-danger mt-1">{{ form.screening_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.screened_by.label_tag }}
+                                {{ form.screened_by }}
+                                {% if form.screened_by.errors %}
+                                    <div class="text-danger mt-1">{{ form.screened_by.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.screening_status.label_tag }}
+                            {{ form.screening_status }}
+                            {% if form.screening_status.errors %}
+                                <div class="text-danger mt-1">{{ form.screening_status.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.failure_reason.label_tag }}
+                            {{ form.failure_reason }}
+                            <small class="text-muted">Required only if status is "Failed"</small>
+                            {% if form.failure_reason.errors %}
+                                <div class="text-danger mt-1">{{ form.failure_reason.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-3 mt-5">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Save Screening
+                            </button>
+                            <a href="{% url 'nimregenin:patient_list' %}" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

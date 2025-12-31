@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Enrollment(models.Model):
-    patient = models.OneToOneField('nimregenin.Demographic', on_delete=models.CASCADE, related_name='enrollment')
+    patient = models.OneToOneField('nimregenin.Screening', on_delete=models.CASCADE, related_name='enrollment')
     enrollment_date = models.DateField()
     study_id = models.CharField(max_length=50, blank=True)
     randomization_number = models.CharField(max_length=50, blank=True)
@@ -16,4 +16,4 @@ class Enrollment(models.Model):
     enrolled_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"Enrolled - {self.patient.participant_id}"
+        return f"Enrolled - {self.patient.pid}"

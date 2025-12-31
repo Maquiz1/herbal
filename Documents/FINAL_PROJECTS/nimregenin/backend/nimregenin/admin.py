@@ -101,7 +101,7 @@ class VisitInline(admin.TabularInline):
 
 @admin.register(Demographic)
 class DemographicAdmin(admin.ModelAdmin):
-    list_display = ['pid', 'age', 'get_gender_display', 'created_at', 'visit_progress']
+    list_display = ['pid', 'age', 'get_gender_display', 'created_at', 'enrollment_status', 'visit_progress']
     list_filter = ['gender', 'created_at']
     search_fields = ['pid']
     inlines = [VisitInline]
@@ -125,16 +125,16 @@ class DemographicAdmin(admin.ModelAdmin):
 # Register other models simply
 @admin.register(Screening)
 class ScreeningAdmin(admin.ModelAdmin):
-    list_display = ['patient_id', 'screening_date', 'screening_status']
+    list_display = ['screening_date', 'screening_status']
     list_filter = ['screening_status', 'screening_date']
-    search_fields = ['patient_id']
+    search_fields = ['screening_date']
 
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ['patient', 'enrollment_date', 'study_id', 'status']
     list_filter = ['status', 'enrollment_date']
-    search_fields = ['patient__patient_id', 'study_id']
+    search_fields = ['patient__pid', 'study_id']
 
 
 # Register CRFs (optional - since they're in Visit inlines, you may not need separate pages)
