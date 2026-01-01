@@ -1,133 +1,131 @@
 {% extends 'base.html' %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}CRF6 - Study Completion/Termination{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-md-12">
-            <h2 class="mb-4 text-success">
-                <i class="bi bi-graph-up me-2"></i>
-                {{ title }}
-            </h2>
 
-            <!-- Messages -->
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
-            {% endif %}
-
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-check2-circle me-2"></i>
-                        Efficacy Assessment
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form method="post" novalidate>
-                        {% csrf_token %}
-
-                        <!-- Patient & Visit Info -->
-                        <div class="row mb-4 p-3 bg-light rounded">
-                            <div class="col-md-6">
-                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"Current Visit" }}
-                            </div>
-                        </div>
-
-                        <!-- Visit Date -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    {{ form.visit_date.label_tag }}
-                                    {{ form.visit_date }}
-                                    <small class="text-muted">Date efficacy was assessed</small>
-                                    {% if form.visit_date.errors %}
-                                        <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Primary Endpoint -->
-                        <h5 class="mt-5 mb-4 text-success border-bottom pb-2">
-                            <i class="bi bi-trophy me-2"></i>Primary Efficacy Endpoint
-                        </h5>
-
-                        <div class="mb-4">
-                            {{ form.primary_endpoint_score.label_tag }}
-                            <div class="input-group input-group-lg">
-                                {{ form.primary_endpoint_score }}
-                                <span class="input-group-text">points</span>
-                            </div>
-                            <small class="text-muted">
-                                Primary outcome measure score (e.g., change from baseline in symptom score, response rate, etc.)
-                            </small>
-                            {% if form.primary_endpoint_score.errors %}
-                                <div class="text-danger mt-1">{{ form.primary_endpoint_score.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Secondary Endpoint -->
-                        <h5 class="mt-5 mb-4 text-success border-bottom pb-2">
-                            <i class="bi bi-award me-2"></i>Secondary Efficacy Endpoint
-                        </h5>
-
-                        <div class="mb-4">
-                            {{ form.secondary_endpoint_score.label_tag }}
-                            <div class="input-group input-group-lg">
-                                {{ form.secondary_endpoint_score }}
-                                <span class="input-group-text">points</span>
-                            </div>
-                            <small class="text-muted">
-                                Secondary outcome measure (e.g., quality of life score, biomarker level, etc.)
-                            </small>
-                            {% if form.secondary_endpoint_score.errors %}
-                                <div class="text-danger mt-1">{{ form.secondary_endpoint_score.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Clinician Assessment -->
-                        <h5 class="mt-5 mb-4 text-success border-bottom pb-2">
-                            <i class="bi bi-person-check me-2"></i>Clinician Global Assessment
-                        </h5>
-
-                        <div class="mb-4">
-                            {{ form.clinician_assessment.label_tag }}
-                            {{ form.clinician_assessment }}
-                            <small class="text-muted">
-                                Overall clinical impression (e.g., "Marked improvement", "Stable disease", "Progressive symptoms")
-                            </small>
-                            {% if form.clinician_assessment.errors %}
-                                <div class="text-danger mt-1">{{ form.clinician_assessment.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Protocol Note -->
-                        <div class="alert alert-success mb-4">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Reminder:</strong> Efficacy endpoints should be assessed using standardized, validated instruments per protocol.
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
-                            <button type="submit" class="btn btn-success btn-lg px-5">
-                                <i class="bi bi-save me-2"></i> Record Efficacy Assessment
-                            </button>
-                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
-                                <i class="bi bi-x-circle me-2"></i> Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- Title & Stats -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">CRF6 - Study Completion / Termination</h2>
+            <p class="text-muted mb-0">Total records: <strong>{{ total_records }}</strong></p>
         </div>
+        <a href="{% url 'nimregenin:patient_list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Back to Patients
+        </a>
     </div>
+
+    <!-- Search -->
+    <form method="get" class="mb-4">
+        <div class="input-group" style="max-width: 500px;">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by PID, Name..." value="{{ search_term }}">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i> Search
+            </button>
+            {% if search_term %}
+            <a href="{% url 'nimregenin:crf6_list' %}" class="btn btn-outline-danger">
+                <i class="bi bi-x"></i>
+            </a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- CRF6 Table -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-success">
+                <tr>
+                    <th>PID</th>
+                    <th>Patient Name</th>
+                    <th>Completion Date</th>
+                    <th>Early Termination</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crf in crf6_records %}
+                <tr>
+                    <td>
+                        <strong>
+                            <a href="{% url 'nimregenin:patient_update' crf.visit.enrollment.patient.patient.pk %}">
+                                {{ crf.visit.enrollment.patient.patient.pid }}
+                            </a>
+                        </strong>
+                    </td>
+                    <td>
+                        {{ crf.visit.enrollment.patient.patient.get_full_name }}
+                    </td>
+                    <td>{{ crf.completion_date|date:"M d, Y" }}</td>
+                    <td>
+                        {% if crf.early_termination %}
+                            <span class="badge bg-danger">Yes</span>
+                        {% else %}
+                            <span class="badge bg-success">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ crf.get_termination_reason_display }}
+                        {% if crf.termination_reason == 'OTHER' and crf.other_reason %}
+                            <br><small class="text-muted">{{ crf.other_reason|truncatechars:50 }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge bg-{% if crf.study_completion_status == 'COMPLETED' %}success{% else %}danger{% endif %}">
+                            {{ crf.get_study_completion_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'nimregenin:crf6_update' crf.pk %}"
+                           class="btn btn-sm btn-success me-1">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="{% url 'nimregenin:visit_list' crf.visit.enrollment.pk %}"
+                           class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-calendar3"></i> View Schedule
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        {% if search_term %}
+                            No completion records found for "{{ search_term }}".
+                        {% else %}
+                            No patients have completed or terminated the study yet.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
+                    Previous
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <a class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</a>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 {% endblock %}

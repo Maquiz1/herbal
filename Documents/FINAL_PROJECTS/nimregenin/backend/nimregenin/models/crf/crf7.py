@@ -1,32 +1,64 @@
+# nimregenin/models/crf.py
+
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
+from datetime import date, datetime, timedelta
 
 class CRF7(models.Model):
-    """Study Completion / Early Termination - Only once, at end of study"""
+    """Efficacy Assessment - One per scheduled visit"""
     visit = models.OneToOneField(
         'nimregenin.Visit',
         on_delete=models.CASCADE,
-        related_name='crf7',
-        limit_choices_to={'visit_type__in': ['DAY120']}  # Or handle in view logic
+        related_name='crf7'
     )
-    completion_date = models.DateField()
-    TERMINATION_CHOICES = (
-        ('COMPLETED', 'Completed 120 Days Follow-Up'),
-        ('DEATH', 'Patient Died'),
-        ('WITHDRAWN', 'Withdrew Consent'),
-        ('LTFU', 'Lost to Follow-Up'),
-        ('OTHER', 'Other'),
+    visit_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when efficacy was assessed"
     )
-    termination_reason = models.CharField(max_length=20, choices=TERMINATION_CHOICES)
-    other_reason = models.TextField(blank=True)
-    final_notes = models.TextField(blank=True)
+    primary_endpoint_score = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Primary efficacy endpoint score"
+    )
+    secondary_endpoint_score = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Secondary endpoint score"
+    )
+    clinician_global_impression = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Clinician's global impression of change"
+    )
+    patient_global_impression = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Patient's global impression of change"
+    )
+    clinician_assessment = models.TextField(
+        blank=True,
+        help_text="Clinician's detailed assessment"
+    )
+    notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    visit = models.OneToOneField('nimregenin.Visit', on_delete=models.CASCADE, related_name='crf7')
-    # completion_date = models.DateField(null=True, blank=True)
-    early_termination = models.BooleanField(default=False)
-    # termination_reason = models.TextField(blank=True)
-    study_completion_status = models.CharField(max_length=20, choices=[('COMPLETED', 'Completed'), ('TERMINATED', 'Terminated')], blank=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = "CRF7 - Efficacy Assessment"
+        verbose_name_plural = "CRF7 - Efficacy Assessments"
 
     def __str__(self):
-        return f"CRF7 Completion - {self.visit.enrollment.patient.patient.pid}"
+        pid = self.visit.enrollment.patient.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
+        date_str = self.visit_date.strftime("%b %d, %Y") if self.visit_date else "No date"
+        return f"CRF7 Efficacy - {pid} ({date_str})"

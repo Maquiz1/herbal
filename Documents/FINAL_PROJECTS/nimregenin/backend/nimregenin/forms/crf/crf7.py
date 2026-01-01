@@ -1,4 +1,4 @@
-# nimregenin/forms/crf7.py (or wherever it is)
+# nimregenin/forms/crf7.py
 
 from django import forms
 from django.utils import timezone
@@ -10,42 +10,37 @@ class CRF7Form(forms.ModelForm):
         model = CRF7
         fields = [
             'visit',
-            'completion_date',
-            'early_termination',
-            'termination_reason',
-            'study_completion_status',
+            'visit_date',
+            'primary_endpoint_score',
+            'secondary_endpoint_score',
+            'clinician_global_impression',
+            'patient_global_impression',
+            'clinician_assessment',
+            'notes',
         ]
         widgets = {
-            'completion_date': forms.DateInput(
-                attrs={
-                    'type': 'date',           # This enables HTML5 date picker
-                    'class': 'form-control',
-                    'placeholder': 'YYYY-MM-DD'  # Helpful hint
-                }
-            ),
-            'termination_reason': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
-            'early_termination': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'visit_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'clinician_assessment': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
         }
         labels = {
-            'completion_date': 'Date of Study Completion/Termination',
-            'early_termination': 'Early Termination',
-            'termination_reason': 'Reason for Early Termination',
-            'study_completion_status': 'Final Study Status',
-        }
-        help_texts = {
-            'early_termination': 'Check if patient withdrew or was terminated before Day 120',
-            'termination_reason': 'Required if early termination is checked',
+            'visit_date': 'Date of Efficacy Assessment',
+            'primary_endpoint_score': 'Primary Endpoint Score',
+            'secondary_endpoint_score': 'Secondary Endpoint Score',
+            'clinician_global_impression': 'Clinician Global Impression',
+            'patient_global_impression': 'Patient Global Impression',
+            'clinician_assessment': 'Clinician Assessment',
+            'notes': 'Additional Notes',
         }
 
     def __init__(self, *args, **kwargs):
+        preselected_visit = kwargs.pop('preselected_visit', None)
         super().__init__(*args, **kwargs)
 
-        # Make completion_date default to today if blank (optional)
-        if 'completion_date' not in self.initial and not self.instance.pk:
-            self.initial['completion_date'] = timezone.now().date()
+        if preselected_visit:
+            self.initial['visit'] = preselected_visit
+            self.initial['visit_date'] = preselected_visit.planned_date or timezone.now().date()
+            self.fields['visit'].widget = forms.HiddenInput()
 
-        # Optional: Add Bootstrap classes to all fields
-        for field_name, field in self.fields.items():
-            if field_name != 'visit':  # visit is usually hidden
-                if not isinstance(field.widget, (forms.CheckboxInput, forms.Textarea)):
-                    field.widget.attrs.update({'class': 'form-control'})
+        if not self.instance.pk:
+            self.initial.setdefault('visit_date', timezone.now().date())

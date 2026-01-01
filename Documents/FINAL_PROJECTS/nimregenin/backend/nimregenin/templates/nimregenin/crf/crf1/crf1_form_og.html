@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    {{ form.height_cm.label_tag }}
+    {{ form.height_cm }}
+</div>
+
+<div class="mb-3">
+    {{ form.weight_kg.label_tag }}
+    {{ form.weight_kg }}
+</div>
+
+<div class="mb-3">
+    {{ form.bmi_display.label_tag }}
+    <div class="form-control bg-light">
+        <strong>{{ form.bmi_display.value|floatformat:1|default:"—" }}</strong>
+        <small class="text-muted ms-2">(auto-calculated)</small>
+    </div>
+</div>
+{% endblock %}

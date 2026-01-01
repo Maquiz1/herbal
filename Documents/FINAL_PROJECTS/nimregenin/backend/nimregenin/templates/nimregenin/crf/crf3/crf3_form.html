@@ -4,13 +4,11 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-10 col-md-12">
+        <div class="col-lg-10">
             <h2 class="mb-4 text-primary">
-                <i class="bi bi-vials me-2"></i>
-                {{ title }}
+                <i class="bi bi-vials me-2"></i>{{ title }}
             </h2>
 
-            <!-- Messages -->
             {% if messages %}
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
@@ -20,139 +18,81 @@
                 {% endfor %}
             {% endif %}
 
+            {% if selected_patient %}
+            <div class="card mb-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Patient Information</h5>
+                </div>
+                <div class="card-body bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Patient ID (PID):</strong>
+                            <span class="fw-bold ms-2">{{ selected_patient.pid }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Name:</strong>
+                            <span class="ms-2">{{ selected_patient.get_full_name }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Laboratory Test Results</h5>
+                    <h5 class="mb-0">CRF3 - Laboratory Results</h5>
                 </div>
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
+                        {{ form.visit }}
 
-                        <!-- Patient & Visit Info (Read-only) -->
-                        <div class="row mb-4 p-3 bg-light rounded">
-                            <div class="col-md-6">
-                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
+                        <div class="mb-3">
+                            {{ form.visit_date.label_tag }}
+                            {{ form.visit_date }}
+                            {% if form.visit_date.errors %}
+                                <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4 mb-3">
+                                {{ form.hemoglobin.label_tag }}
+                                {{ form.hemoglobin }}
+                                <small class="text-muted">g/dL</small>
                             </div>
-                            <div class="col-md-6">
-                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"New Visit" }}
+                            <div class="col-md-4 mb-3">
+                                {{ form.wbc.label_tag }}
+                                {{ form.wbc }}
+                                <small class="text-muted">×10³/µL</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form.platelets.label_tag }}
+                                {{ form.platelets }}
+                                <small class="text-muted">×10³/µL</small>
                             </div>
                         </div>
 
-                        <!-- Visit Date -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-4">
-                                    {{ form.visit_date.label_tag }}
-                                    {{ form.visit_date }}
-                                    <small class="text-muted">Date blood/sample was drawn</small>
-                                    {% if form.visit_date.errors %}
-                                        <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
-                                    {% endif %}
-                                </div>
+                        <div class="row g-3">
+                            <div class="col-md-4 mb-3">
+                                {{ form.creatinine.label_tag }}
+                                {{ form.creatinine }}
+                                <small class="text-muted">mg/dL</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form.alt.label_tag }}
+                                {{ form.alt }}
+                                <small class="text-muted">U/L</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form.ast.label_tag }}
+                                {{ form.ast }}
+                                <small class="text-muted">U/L</small>
                             </div>
                         </div>
 
-                        <!-- Hematology -->
-                        <h5 class="mt-5 mb-4 text-primary border-bottom pb-2">
-                            <i class="bi bi-droplet me-2"></i>Hematology
-                        </h5>
-
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    {{ form.hemoglobin.label_tag }}
-                                    <div class="input-group">
-                                        {{ form.hemoglobin }}
-                                        <span class="input-group-text">g/dL</span>
-                                    </div>
-                                    <small class="text-muted">Hemoglobin</small>
-                                    {% if form.hemoglobin.errors %}
-                                        <div class="text-danger mt-1">{{ form.hemoglobin.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    {{ form.wbc.label_tag }}
-                                    <div class="input-group">
-                                        {{ form.wbc }}
-                                        <span class="input-group-text">×10³/μL</span>
-                                    </div>
-                                    <small class="text-muted">White Blood Cell Count</small>
-                                    {% if form.wbc.errors %}
-                                        <div class="text-danger mt-1">{{ form.wbc.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    {{ form.platelets.label_tag }}
-                                    <div class="input-group">
-                                        {{ form.platelets }}
-                                        <span class="input-group-text">×10³/μL</span>
-                                    </div>
-                                    <small class="text-muted">Platelet Count</small>
-                                    {% if form.platelets.errors %}
-                                        <div class="text-danger mt-1">{{ form.platelets.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chemistry -->
-                        <h5 class="mt-5 mb-4 text-primary border-bottom pb-2">
-                            <i class="bi bi-flask me-2"></i>Chemistry
-                        </h5>
-
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    {{ form.creatinine.label_tag }}
-                                    <div class="input-group">
-                                        {{ form.creatinine }}
-                                        <span class="input-group-text">mg/dL</span>
-                                    </div>
-                                    <small class="text-muted">Serum Creatinine</small>
-                                    {% if form.creatinine.errors %}
-                                        <div class="text-danger mt-1">{{ form.creatinine.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    {{ form.alt.label_tag }}
-                                    <div class="input-group">
-                                        {{ form.alt }}
-                                        <span class="input-group-text">U/L</span>
-                                    </div>
-                                    <small class="text-muted">ALT (SGPT)</small>
-                                    {% if form.alt.errors %}
-                                        <div class="text-danger mt-1">{{ form.alt.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    {{ form.ast.label_tag }}
-                                    <div class="input-group">
-                                        {{ form.ast }}
-                                        <span class="input-group-text">U/L</span>
-                                    </div>
-                                    <small class="text-muted">AST (SGOT)</small>
-                                    {% if form.ast.errors %}
-                                        <div class="text-danger mt-1">{{ form.ast.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
-                            <button type="submit" class="btn btn-success btn-lg px-5">
+                        <div class="d-flex gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
                                 <i class="bi bi-save me-2"></i> Save Lab Results
                             </button>
                             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">

@@ -4,13 +4,11 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-9 col-md-11">
-            <h2 class="mb-4 text-dark">
-                <i class="bi bi-flag me-2"></i>
-                {{ title }}
+        <div class="col-lg-10">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-graph-up me-2"></i>{{ title }}
             </h2>
 
-            <!-- Messages -->
             {% if messages %}
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
@@ -20,100 +18,78 @@
                 {% endfor %}
             {% endif %}
 
+            {% if selected_patient %}
+            <div class="card mb-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Patient Information</h5>
+                </div>
+                <div class="card-body bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Patient ID (PID):</strong>
+                            <span class="fw-bold ms-2">{{ selected_patient.pid }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Name:</strong>
+                            <span class="ms-2">{{ selected_patient.get_full_name }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="card shadow">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-journal-check me-2"></i>
-                        Study Completion or Early Termination
-                    </h5>
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">CRF7 - Efficacy Assessment</h5>
                 </div>
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
+                        {{ form.visit }}
 
-                        <!-- Patient & Visit Info -->
-                        <div class="row mb-4 p-3 bg-light rounded">
-                            <div class="col-md-6">
-                                <strong>Patient ID:</strong> {{ form.instance.visit.patient.patient_id }}
+                        <div class="mb-3">
+                            {{ form.visit_date.label_tag }}
+                            {{ form.visit_date }}
+                            {% if form.visit_date.errors %}
+                                <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.primary_endpoint_score.label_tag }}
+                                {{ form.primary_endpoint_score }}
                             </div>
-                            <div class="col-md-6">
-                                <strong>Visit:</strong> {{ form.instance.visit.get_visit_type_display|default:"Final Visit" }}
+                            <div class="col-md-6 mb-3">
+                                {{ form.secondary_endpoint_score.label_tag }}
+                                {{ form.secondary_endpoint_score }}
                             </div>
                         </div>
 
-                        <!-- Completion Date -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.clinician_global_impression.label_tag }}
+                                {{ form.clinician_global_impression }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.patient_global_impression.label_tag }}
+                                {{ form.patient_global_impression }}
+                            </div>
+                        </div>
+
                         <div class="mb-4">
-                            {{ form.completion_date.label_tag }}
-                            {{ form.completion_date }}
-                            <small class="text-muted">Date of final visit or early termination</small>
-                            {% if form.completion_date.errors %}
-                                <div class="text-danger mt-1">{{ form.completion_date.errors }}</div>
-                            {% endif %}
+                            {{ form.clinician_assessment.label_tag }}
+                            {{ form.clinician_assessment }}
                         </div>
 
-                        <!-- Early Termination Checkbox -->
                         <div class="mb-4">
-                            <div class="form-check form-switch form-check-reverse">
-                                {{ form.early_termination }}
-                                {{ form.early_termination.label_tag }}
-                            </div>
-                            <small class="text-muted">
-                                Check if the patient withdrew or was discontinued before completing the study
-                            </small>
-                            {% if form.early_termination.errors %}
-                                <div class="text-danger mt-1">{{ form.early_termination.errors }}</div>
-                            {% endif %}
+                            {{ form.notes.label_tag }}
+                            {{ form.notes }}
                         </div>
 
-                        <!-- Termination Reason (shown if early termination checked) -->
-                        <div id="termination-reason-group" class="mb-4" style="display: none;">
-                            {{ form.termination_reason.label_tag }}
-                            {{ form.termination_reason }}
-                            <small class="text-muted">
-                                Provide detailed reason for early termination (e.g., adverse event, withdrawal of consent, lost to follow-up)
-                            </small>
-                            {% if form.termination_reason.errors %}
-                                <div class="text-danger mt-1">{{ form.termination_reason.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Study Completion Status -->
-                        <div class="mb-4">
-                            {{ form.study_completion_status.label_tag }}
-                            <div class="row g-3">
-                                {% for value, label in form.study_completion_status.field.choices %}
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="study_completion_status"
-                                               id="status_{{ value }}" value="{{ value }}"
-                                               {% if form.study_completion_status.value == value %}checked{% endif %}
-                                               {% if value == '' %}required{% endif %}>
-                                        <label class="form-check-label fw-medium" for="status_{{ value }}">
-                                            {% if value == 'COMPLETED' %}
-                                                <span class="badge bg-success">{{ label }}</span>
-                                            {% elif value == 'TERMINATED' %}
-                                                <span class="badge bg-danger">{{ label }}</span>
-                                            {% endif %}
-                                        </label>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% if form.study_completion_status.errors %}
-                                <div class="text-danger mt-1">{{ form.study_completion_status.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Protocol Reminder -->
-                        <div class="alert alert-warning mb-4">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            <strong>Important:</strong> All final assessments must be completed. For early termination, notify the sponsor immediately and complete required follow-up procedures.
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="d-flex justify-content-start gap-3 mt-5 pt-4 border-top">
-                            <button type="submit" class="btn btn-dark btn-lg px-5">
-                                <i class="bi bi-save me-2"></i> Record Completion/Termination
+                        <div class="d-flex gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-save me-2"></i> Save Efficacy
                             </button>
                             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
                                 <i class="bi bi-x-circle me-2"></i> Cancel
@@ -125,29 +101,4 @@
         </div>
     </div>
 </div>
-
-<!-- JavaScript to show/hide termination reason -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const earlyTermCheckbox = document.querySelector('#id_early_termination');
-    const reasonGroup = document.querySelector('#termination-reason-group');
-
-    function toggleReason() {
-        if (earlyTermCheckbox.checked) {
-            reasonGroup.style.display = 'block';
-            // Make field required when shown
-            reasonGroup.querySelector('textarea').required = true;
-        } else {
-            reasonGroup.style.display = 'none';
-            reasonGroup.querySelector('textarea').required = false;
-        }
-    }
-
-    // Initial check
-    toggleReason();
-
-    // Listen for changes
-    earlyTermCheckbox.addEventListener('change', toggleReason);
-});
-</script>
 {% endblock %}
