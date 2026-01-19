@@ -5,18 +5,9 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <h2 class="mb-4 text-success">
-                <i class="bi bi-flag me-2"></i>{{ title }}
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-check-circle me-2"></i>{{ title }}
             </h2>
-
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
-            {% endif %}
 
             {% if current_patient %}
             <div class="card mb-4 border-info">
@@ -39,15 +30,15 @@
             {% endif %}
 
             <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">CRF6 - Study Completion / Termination</h5>
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">CRF6 - Completion/Termination</h5>
                 </div>
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
 
                         <!-- Visit dropdown -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             {{ form.visit.label_tag }}
                             {{ form.visit }}
                             {% if form.visit.errors %}
@@ -55,59 +46,47 @@
                             {% endif %}
                         </div>
 
+                        <!-- Completion Date -->
                         <div class="mb-3">
                             {{ form.completion_date.label_tag }}
                             {{ form.completion_date }}
-                            {% if form.completion_date.errors %}
-                                <div class="text-danger mt-1">{{ form.completion_date.errors }}</div>
-                            {% endif %}
                         </div>
 
-                        <div class="mb-3">
-                            <div class="form-check">
-                                {{ form.early_termination }}
-                                {{ form.early_termination.label_tag }}
-                                {% if form.early_termination.errors %}
-                                    <div class="text-danger mt-1">{{ form.early_termination.errors }}</div>
-                                {% endif %}
-                            </div>
+                        <!-- Early Termination -->
+                        <div class="form-check mb-3">
+                            {{ form.early_termination }}
+                            {{ form.early_termination.label_tag }}
                         </div>
 
+                        <!-- Termination Reason -->
                         <div class="mb-3">
                             {{ form.termination_reason.label_tag }}
                             {{ form.termination_reason }}
-                            {% if form.termination_reason.errors %}
-                                <div class="text-danger mt-1">{{ form.termination_reason.errors }}</div>
-                            {% endif %}
                         </div>
 
+                        <!-- Other Reason -->
                         <div class="mb-3">
                             {{ form.other_reason.label_tag }}
                             {{ form.other_reason }}
-                            {% if form.other_reason.errors %}
-                                <div class="text-danger mt-1">{{ form.other_reason.errors }}</div>
-                            {% endif %}
                         </div>
 
+                        <!-- Study Completion Status -->
                         <div class="mb-3">
                             {{ form.study_completion_status.label_tag }}
                             {{ form.study_completion_status }}
-                            {% if form.study_completion_status.errors %}
-                                <div class="text-danger mt-1">{{ form.study_completion_status.errors }}</div>
-                            {% endif %}
                         </div>
 
+                        <!-- Final Notes -->
                         <div class="mb-4">
                             {{ form.final_notes.label_tag }}
                             {{ form.final_notes }}
-                            {% if form.final_notes.errors %}
-                                <div class="text-danger mt-1">{{ form.final_notes.errors }}</div>
-                            {% endif %}
                         </div>
 
+                        <!-- Buttons -->
                         <div class="d-flex gap-3 mt-5">
-                            <button type="submit" class="btn btn-success btn-lg px-5">
-                                <i class="bi bi-save me-2"></i> Save Completion
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-save me-2"></i>
+                                {% if object %}Update{% else %}Save{% endif %} Completion/Termination
                             </button>
                             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
                                 <i class="bi bi-x-circle me-2"></i> Cancel
