@@ -5,42 +5,106 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
+
             <h2 class="mb-4 text-info">
                 <i class="bi bi-person-check me-2"></i>{{ title }}
             </h2>
 
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
             {% endif %}
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {# ================= PATIENT DETAILS CARD ================= #}
+            {% if current_patient and current_screening %}
+            <div class="card mb-4 border-info shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Patient Being Enrolled</h5>
+                </div>
+                <div class="card-body bg-light">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Patient ID (PID):</strong>
+                            <span class="fw-bold ms-2">
+                                {{ current_patient.pid }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Full Name:</strong>
+                            <span class="ms-2">
+                                {{ current_patient.get_full_name|default:"(No name recorded)" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Age / Gender:</strong>
+                            <span class="ms-2">
+                                {% if current_patient.age %}
+                                {{ current_patient.age }} yrs
+                                {% endif %}
+                                {% if current_patient.get_gender_display %}
+                                / {{ current_patient.get_gender_display }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Site:</strong>
+                            <span class="ms-2">
+                                {{ current_patient.site.name|default:"—" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Screening Status:</strong>
+                            <span class="badge bg-success ms-2">
+                                {{ current_screening.get_screening_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Screening Date:</strong>
+                            <span class="ms-2">
+                                {{ current_screening.screening_date|date:"M d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> No screening selected. Please return to the patient registry.
+            </div>
+            {% endif %}
+            {# ================= END PATIENT DETAILS CARD ================= #}
+
 
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Patient Enrollment Form</h5>
+                    <h5 class="mb-0">Enrollment Form</h5>
                 </div>
                 <div class="card-body">
+
                     <form method="post" novalidate>
                         {% csrf_token %}
 
-                        <!-- Display selected patient -->
-                        {% if selected_patient %}
-                        <div class="row mb-4 p-3 bg-light rounded border">
-                            <div class="col-md-6">
-                                <strong>Patient ID (PID):</strong>
-                                <span class="fw-bold">{{ selected_patient.pid }}</span>
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Name:</strong>
-                                {{ selected_patient.fname }} {{ selected_patient.mname }} {{ selected_patient.lname }}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Hidden patient field if preselected -->
+                        <!-- Hidden screening field -->
                         {{ form.patient }}
 
                         <div class="row">
@@ -48,14 +112,19 @@
                                 {{ form.enrollment_date.label_tag }}
                                 {{ form.enrollment_date }}
                                 {% if form.enrollment_date.errors %}
-                                    <div class="text-danger mt-1">{{ form.enrollment_date.errors }}</div>
+                                <div class="text-danger mt-1">
+                                    {{ form.enrollment_date.errors }}
+                                </div>
                                 {% endif %}
                             </div>
+
                             <div class="col-md-6 mb-3">
                                 {{ form.enrolled_by.label_tag }}
                                 {{ form.enrolled_by }}
                                 {% if form.enrolled_by.errors %}
-                                    <div class="text-danger mt-1">{{ form.enrolled_by.errors }}</div>
+                                <div class="text-danger mt-1">
+                                    {{ form.enrolled_by.errors }}
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -63,11 +132,21 @@
                         <div class="mb-3">
                             {{ form.study_id.label_tag }}
                             {{ form.study_id }}
+                            {% if form.study_id.errors %}
+                            <div class="text-danger mt-1">
+                                {{ form.study_id.errors }}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
                             {{ form.randomization_number.label_tag }}
                             {{ form.randomization_number }}
+                            {% if form.randomization_number.errors %}
+                            <div class="text-danger mt-1">
+                                {{ form.randomization_number.errors }}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-4">
@@ -77,15 +156,16 @@
                                 <div class="col-md-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="status"
-                                               id="status_{{ value }}" value="{{ value }}"
-                                               {% if form.status.value == value %}checked{% endif %}>
+                                            id="status_{{ value }}" value="{{ value }}" {% if form.status.value == value %}checked{% endif %}>
                                         <label class="form-check-label" for="status_{{ value }}">
                                             {% if value == 'ENROLLED' %}
-                                                <span class="badge bg-primary">{{ label }}</span>
+                                            <span class="badge bg-primary">{{ label }}</span>
                                             {% elif value == 'RANDOMIZED' %}
-                                                <span class="badge bg-success">{{ label }}</span>
+                                            <span class="badge bg-success">{{ label }}</span>
                                             {% elif value == 'WITHDRAWN' %}
-                                                <span class="badge bg-danger">{{ label }}</span>
+                                            <span class="badge bg-danger">{{ label }}</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">{{ label }}</span>
                                             {% endif %}
                                         </label>
                                     </div>
@@ -102,9 +182,11 @@
                                 <i class="bi bi-x-circle me-2"></i> Cancel
                             </a>
                         </div>
+
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

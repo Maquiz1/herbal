@@ -1,9 +1,9 @@
 # nimregenin/forms/__init__.py
 
 from .demographic import DemographicForm
-from .screening import ScreeningForm
-from .enrollment import EnrollmentForm
-from .crf.crf1 import CRF1Form
+from .screening_form import ScreeningForm
+from .enrollment_form import EnrollmentForm
+from .crf.crf1_form import CRF1Form
 from .crf.crf2 import CRF2Form
 from .crf.crf3 import CRF3Form
 from .crf.crf4 import CRF4Form

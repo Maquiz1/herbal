@@ -1,4 +1,4 @@
-from .crf1 import CRF1Form
+from .crf1_form import CRF1Form
 from .crf2 import CRF2Form
 from .crf3 import CRF3Form
 from .crf4 import CRF4Form

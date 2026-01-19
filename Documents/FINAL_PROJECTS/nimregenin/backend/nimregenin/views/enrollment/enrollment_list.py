@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.contrib import messages
 
-from ..create_update import CreateUpdateView
+from ..create_update_view import CreateUpdateView
 from ..delete import CRFDeleteView
 from ...models import Enrollment, Demographic, Visit
 

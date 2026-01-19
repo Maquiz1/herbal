@@ -1,10 +1,17 @@
 # nimregenin/forms/crf1.py
 
 from django import forms
-from ...models import CRF1
+from ...models import CRF1, Visit
 
 
 class CRF1Form(forms.ModelForm):
+    # Optional: Show calculated BMI in form (read-only)
+    bmi_display = forms.CharField(
+        label='BMI (kg/m²)',
+        required=False,
+        widget=forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'})
+    )
+
     class Meta:
         model = CRF1
         fields = [
@@ -30,17 +37,21 @@ class CRF1Form(forms.ModelForm):
             'concomitant_medications': 'Concomitant Medications',
         }
 
-    # Optional: Show calculated BMI in form (read-only)
-    bmi_display = forms.CharField(
-        label='BMI (kg/m²)',
-        required=False,
-        widget=forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'})
-    )
-
     def __init__(self, *args, **kwargs):
+        """
+        Accept optional 'current_visit' from the view to pre-fill visit/visit_date.
+        Show BMI if editing existing CRF1.
+        """
+        self.current_visit = kwargs.pop('current_visit', None)
         super().__init__(*args, **kwargs)
-        # Show current BMI if editing
-        if self.instance.pk and self.instance.bmi:
+
+        # Pre-fill visit and visit_date from current_visit (CREATE mode)
+        if self.current_visit and not self.instance.pk:
+            self.fields['visit'].initial = self.current_visit
+            self.fields['visit_date'].initial = self.current_visit.planned_date
+
+        # Show BMI if editing existing CRF1
+        if self.instance.pk and self.instance.bmi is not None:
             self.fields['bmi_display'].initial = self.instance.bmi
 
     def clean(self):
@@ -48,8 +59,16 @@ class CRF1Form(forms.ModelForm):
         height = cleaned_data.get('height_cm')
         weight = cleaned_data.get('weight_kg')
 
-        if height and weight:
-            if height <= 0:
-                self.add_error('height_cm', 'Height must be greater than 0.')
-            # No need to set bmi here — model.save() handles it
+        # Validate height
+        if height is not None and height <= 0:
+            self.add_error('height_cm', 'Height must be greater than 0.')
+
+        # Validate weight
+        if weight is not None and weight <= 0:
+            self.add_error('weight_kg', 'Weight must be greater than 0.')
+
+        # HARD guarantee: visit must be assigned
+        if not self.instance.visit_id:
+            raise forms.ValidationError("Visit must be assigned before saving CRF1.")
+
         return cleaned_data

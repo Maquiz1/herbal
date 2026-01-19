@@ -5,7 +5,7 @@ from .visit import *
 from .reminders import VoiceReminderTwiMLView
 from .crf import *
 from .dashboard import *
-from .create_update import CreateUpdateView
+from .create_update_view import CreateUpdateView
 from .export import OverduePatientsCSVExportView
 from .delete import CRFDeleteView
 from .protocol import TemplateDetailsView   

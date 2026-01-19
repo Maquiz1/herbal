@@ -20,7 +20,7 @@
         <div class="col-md-4 col-sm-6">
             <div class="card text-white bg-primary h-100 shadow-sm">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-people fs-3"></i> Total Recruited</h5>
+                    <h5><i class="bi bi-people fs-3"></i> Total Registered</h5>
                     <h2 class="display-5 fw-bold mb-0">{{ total_patients }}</h2>
                 </div>
             </div>
@@ -29,7 +29,7 @@
         <div class="col-md-4 col-sm-6">
             <div class="card text-white bg-success h-100 shadow-sm">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-check-circle fs-3"></i> Screened</h5>
+                    <h5><i class="bi bi-check-circle fs-3"></i> Screened</h5>
                     <h2 class="display-5 fw-bold mb-0">{{ screened_patients }}</h2>
                 </div>
             </div>
@@ -38,7 +38,7 @@
         <div class="col-md-4 col-sm-6">
             <div class="card text-white bg-warning text-dark h-100 shadow-sm">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-clipboard-check fs-3"></i> Eligible</h5>
+                    <h5><i class="bi bi-clipboard-check fs-3"></i> Eligible</h5>
                     <h2 class="display-5 fw-bold mb-0">{{ eligible_patients }}</h2>
                 </div>
             </div>
@@ -47,8 +47,17 @@
         <div class="col-md-4 col-sm-6">
             <div class="card text-white bg-info h-100 shadow-sm">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-person-check fs-3"></i> Enrolled</h5>
+                    <h5><i class="bi bi-person-check fs-3"></i> Enrolled</h5>
                     <h2 class="display-5 fw-bold mb-0">{{ enrolled_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card text-white bg-success h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5><i class="bi bi-check2-all fs-3"></i> Completed Study</h5>
+                    <h2 class="display-5 fw-bold mb-0">{{ completed_patients }}</h2>
                 </div>
             </div>
         </div>
@@ -56,17 +65,8 @@
         <div class="col-md-4 col-sm-6">
             <div class="card text-white bg-danger h-100 shadow-sm">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-x-circle fs-3"></i> Terminated</h5>
+                    <h5><i class="bi bi-x-circle fs-3"></i> Terminated Early</h5>
                     <h2 class="display-5 fw-bold mb-0">{{ terminated_patients }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6">
-            <div class="card text-white bg-secondary h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-person-x fs-3"></i> Lost to Follow-Up</h5>
-                    <h2 class="display-5 fw-bold mb-0">{{ ltf_patients }}</h2>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
             </p>
             {% if user.is_staff %}
             <a href="{% url 'admin:index' %}" class="btn btn-outline-dark btn-lg mt-3">
-                <i class="bi bi-gear me-2"></i> Django Admin Panel
+                <i class="bi bi-gear me-2"></i> Nimregenin Admin Panel
             </a>
             {% endif %}
         </div>

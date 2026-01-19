@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
-from ...create_update import CreateUpdateView  # Base CreateUpdateView in views/
+from ...create_update_view import CreateUpdateView  # Base CreateUpdateView in views/
 from ...delete import CRFDeleteView              # Generic DeleteView in crf/
 from ....models import CRF3, Visit               # nimregenin.models
 

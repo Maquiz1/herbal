@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from ..create_update import CreateUpdateView
+from ..create_update_view import CreateUpdateView
 from ...models import Demographic
 from ...forms import DemographicForm
 

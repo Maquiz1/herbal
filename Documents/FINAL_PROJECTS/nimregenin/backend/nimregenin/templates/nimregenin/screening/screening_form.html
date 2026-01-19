@@ -9,14 +9,60 @@
                 <i class="bi bi-clipboard-check me-2"></i>{{ title }}
             </h2>
 
-            <!-- Messages -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
             {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Patient Info — Always shown when patient exists -->
+            <!-- FIX: Removed 'not' so it shows info when patient exists -->
+            {% if current_patient %}
+            <div class="card mb-4 border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Patient Being Screened</h5>
                 </div>
-                {% endfor %}
+                <div class="card-body bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Patient ID (PID):</strong>
+                            <span class="fw-bold ms-2">{{ current_patient.pid }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Full Name:</strong>
+                            <span class="ms-2">{{ current_patient.get_full_name|default:"(No name recorded)" }}</span>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <strong>Age / Gender:</strong>
+                            <span class="ms-2">
+                                {% if current_patient.age %}{{ current_patient.age }} yrs{% endif %}
+                                <!-- FIX: Combined lines below to close tag properly -->
+                                {% if current_patient.get_gender_display %} / {{ current_patient.get_gender_display }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Site:</strong>
+                            <span class="ms-2">{{ current_patient.site.name|default:"—" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> No patient selected. Please return to the patient list.
+            </div>
             {% endif %}
 
             <div class="card shadow">
@@ -27,24 +73,7 @@
                     <form method="post" novalidate>
                         {% csrf_token %}
 
-                        <!-- Display selected patient (when coming from patient list) -->
-                        {% if selected_patient %}
-                        <div class="row mb-4 p-3 bg-light rounded border">
-                            <div class="col-md-6">
-                                <strong>Patient ID (PID):</strong>
-                                <span class="fw-bold">{{ selected_patient.pid }}</span>
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Name:</strong>
-                                {{ selected_patient.fname }} {{ selected_patient.mname }} {{ selected_patient.lname }}
-                                {% if not selected_patient.fname and not selected_patient.lname %}
-                                    <em class="text-muted">(No name recorded)</em>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Hidden patient field if preselected -->
+                        <!-- Hidden patient field -->
                         {{ form.patient }}
 
                         <div class="row">
@@ -52,14 +81,14 @@
                                 {{ form.screening_date.label_tag }}
                                 {{ form.screening_date }}
                                 {% if form.screening_date.errors %}
-                                    <div class="text-danger mt-1">{{ form.screening_date.errors }}</div>
+                                <div class="text-danger mt-1">{{ form.screening_date.errors }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6 mb-3">
                                 {{ form.screened_by.label_tag }}
                                 {{ form.screened_by }}
                                 {% if form.screened_by.errors %}
-                                    <div class="text-danger mt-1">{{ form.screened_by.errors }}</div>
+                                <div class="text-danger mt-1">{{ form.screened_by.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -68,7 +97,7 @@
                             {{ form.screening_status.label_tag }}
                             {{ form.screening_status }}
                             {% if form.screening_status.errors %}
-                                <div class="text-danger mt-1">{{ form.screening_status.errors }}</div>
+                            <div class="text-danger mt-1">{{ form.screening_status.errors }}</div>
                             {% endif %}
                         </div>
 
@@ -77,7 +106,7 @@
                             {{ form.failure_reason }}
                             <small class="text-muted">Required only if status is "Failed"</small>
                             {% if form.failure_reason.errors %}
-                                <div class="text-danger mt-1">{{ form.failure_reason.errors }}</div>
+                            <div class="text-danger mt-1">{{ form.failure_reason.errors }}</div>
                             {% endif %}
                         </div>
 

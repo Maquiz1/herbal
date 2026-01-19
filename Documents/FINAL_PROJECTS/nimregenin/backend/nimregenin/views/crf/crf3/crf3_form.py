@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 
-from ...create_update import CreateUpdateView
+from ...create_update_view import CreateUpdateView
 from ....forms import CRF3Form
 from ....models import CRF3, Visit
 

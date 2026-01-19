@@ -2,24 +2,26 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from ...models import Demographic, Screening, Enrollment
+from django.db.models import Count, Q
+
+from ...models import Demographic, Screening, Enrollment, CRF6
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
     """
     Dashboard home page after login.
-    Shows key recruitment statistics.
+    Shows key recruitment and study status statistics.
     """
-    template_name = 'nimregenin/dashboard/home.html'  # Adjust path if needed
+    template_name = 'nimregenin/dashboard/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'NIM Regenin Registry Dashboard'
+        context['title'] = 'Nimregenin Registry Dashboard'
 
         # Total registered patients
         context['total_patients'] = Demographic.objects.count()
 
-        # Screened patients (any screening record exists)
+        # Screened patients (have a screening record)
         context['screened_patients'] = Demographic.objects.filter(screening__isnull=False).count()
 
         # Eligible patients (screened and passed)
@@ -27,18 +29,35 @@ class HomeView(LoginRequiredMixin, TemplateView):
             screening__screening_status='PASS'
         ).count()
 
-        # Enrolled patients (have enrollment via screening)
+        # Enrolled patients
         context['enrolled_patients'] = Demographic.objects.filter(
             screening__enrollment__isnull=False
         ).count()
 
-        # Study Termination / Withdrawn (example: status == 'WITHDRAWN')
-        context['terminated_patients'] = Demographic.objects.filter(
-            screening__enrollment__status='WITHDRAWN'
+        # Completed study (CRF6 with status COMPLETED)
+        context['completed_patients'] = CRF6.objects.filter(
+            study_completion_status='COMPLETED'
         ).count()
 
-        # Loss to Follow-Up (you can customize this logic later)
-        # Example: enrolled but no recent activity — placeholder
-        context['ltf_patients'] = 0  # Replace with real logic when ready
+        # Terminated / Withdrawn / LTFU / Death (early termination)
+        context['terminated_patients'] = CRF6.objects.filter(
+            early_termination=True
+        ).count()
+
+        # Breakdown of termination reasons (optional for dashboard cards)
+        termination_breakdown = CRF6.objects.filter(
+            early_termination=True
+        ).values('termination_reason').annotate(count=Count('id'))
+
+        context['termination_breakdown'] = {
+            'DEATH': 0,
+            'WITHDRAWN': 0,
+            'LTFU': 0,
+            'OTHER': 0,
+        }
+        for item in termination_breakdown:
+            reason = item['termination_reason']
+            if reason in context['termination_breakdown']:
+                context['termination_breakdown'][reason] = item['count']
 
         return context
