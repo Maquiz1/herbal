@@ -1,10 +1,7 @@
-# nimregenin/views/crf1.py
-
 from decimal import Decimal, InvalidOperation, DivisionByZero
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.http import Http404
 
 from ...create_update_view import CreateUpdateView
 from ....forms import CRF1Form
@@ -24,15 +21,15 @@ class CRF1CreateUpdateView(CreateUpdateView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-
         self.current_visit = None
         self.current_patient = None
 
-        # CREATE mode: get Visit
-        if 'visit_pk' in kwargs:
+        # CREATE mode: get Visit (must be Baseline)
+        visit_pk = kwargs.get('visit_pk') or request.GET.get('visit_pk')
+        if visit_pk:
             self.current_visit = get_object_or_404(
                 Visit,
-                pk=kwargs['visit_pk'],
+                pk=visit_pk,
                 visit_type='BASELINE'
             )
             self.current_patient = self.current_visit.enrollment.patient.patient
@@ -41,23 +38,25 @@ class CRF1CreateUpdateView(CreateUpdateView):
         """
         EDIT mode: return CRF1 instance and set current_visit / current_patient
         """
-        obj = super().get_object() if hasattr(super(), 'get_object') else None
+        obj = super().get_object()
         if obj:
             self.current_visit = obj.visit
             self.current_patient = obj.visit.enrollment.patient.patient
         return obj
 
-    def get_extra_context(self):
-        title_pid = (
-            self.current_visit.enrollment.patient.patient.pid
-            if self.current_visit else "New CRF1"
-        )
-        context_title = (
-            f"Edit CRF1 - Baseline ({title_pid})"
-            if getattr(self, 'object', None)
-            else f"Add CRF1 - Baseline ({title_pid})"
-        )
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        kwargs['current_visit'] = self.current_visit
+        return kwargs
 
+    def get_extra_context(self):
+        title_pid = self.current_patient.pid if self.current_patient else "New CRF1"
+        context_title = (
+            f"Edit CRF1 - Baseline Assessment ({title_pid})"
+            if getattr(self, 'object', None)
+            else f"Add CRF1 - Baseline Assessment ({title_pid})"
+        )
         return {
             'current_visit': self.current_visit,
             'current_patient': self.current_patient,
@@ -69,7 +68,7 @@ class CRF1CreateUpdateView(CreateUpdateView):
         form = self.get_form_class()(
             request.POST,
             instance=self.object,
-            current_visit=self.current_visit,  # pass to form if needed
+            current_visit=self.current_visit,
         )
 
         # Bind visit for CREATE
@@ -107,11 +106,11 @@ class CRF1CreateUpdateView(CreateUpdateView):
 
     def get_success_url(self):
         """
-        Redirect to the visit detail page (or patient list fallback)
+        Redirect to the visit list for this enrollment
         """
         visit = self.object.visit
         enrollment = visit.enrollment
         return reverse_lazy(
-            'nimregenin:visit_list',  # adjust if you have a visit detail URL
+            'nimregenin:visit_list',
             kwargs={'pk': enrollment.pk}
         )

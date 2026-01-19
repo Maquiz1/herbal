@@ -1,7 +1,5 @@
-# nimregenin/forms/crf1.py
-
 from django import forms
-from ...models import CRF1, Visit
+from ...models import CRF1
 
 
 class CRF1Form(forms.ModelForm):
@@ -20,15 +18,18 @@ class CRF1Form(forms.ModelForm):
         Accept optional 'current_visit' from the view to pre-fill visit/visit_date.
         Show BMI if editing existing CRF1.
         """
-        self.request = kwargs.pop('request', None)          # 🔑 allow request safely
+        self.request = kwargs.pop('request', None)
         self.current_visit = kwargs.pop('current_visit', None)
         super().__init__(*args, **kwargs)
 
+        # Hide visit field (we display PID + Visit Day separately in template)
+        self.fields['visit'].widget = forms.HiddenInput()
+
         # Pre-fill visit and visit_date from current_visit (CREATE mode)
         if self.current_visit and not self.instance.pk:
-            self.fields['visit'].initial = self.current_visit
+            self.initial['visit'] = self.current_visit
             if hasattr(self.current_visit, 'planned_date'):
-                self.fields['visit_date'].initial = self.current_visit.planned_date
+                self.initial['visit_date'] = self.current_visit.planned_date
 
         # Show BMI if editing existing CRF1
         if self.instance.pk and self.instance.bmi is not None:
@@ -64,16 +65,14 @@ class CRF1Form(forms.ModelForm):
         height = cleaned_data.get('height_cm')
         weight = cleaned_data.get('weight_kg')
 
-        # Validate height
         if height is not None and height <= 0:
             self.add_error('height_cm', 'Height must be greater than 0.')
 
-        # Validate weight
         if weight is not None and weight <= 0:
             self.add_error('weight_kg', 'Weight must be greater than 0.')
 
         # HARD guarantee: visit must be assigned
-        if not self.instance.visit_id:
+        if not cleaned_data.get('visit') and not self.instance.visit_id:
             raise forms.ValidationError("Visit must be assigned before saving CRF1.")
 
         return cleaned_data

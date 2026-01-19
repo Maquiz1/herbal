@@ -12,6 +12,7 @@ from ....models import CRF4, Visit
 class CRF4CreateUpdateView(CreateUpdateView):
     """
     Create / Update view for CRF4 (Concomitant Medications).
+    Visit is preselected and hidden in the form.
     """
     model = CRF4
     form_class = CRF4Form
@@ -23,16 +24,13 @@ class CRF4CreateUpdateView(CreateUpdateView):
         self.current_visit = None
         self.current_patient = None
 
-        # CREATE mode: get Visit (accept from kwargs or querystring)
+        # CREATE mode: get Visit
         visit_pk = kwargs.get('visit_pk') or request.GET.get('visit_pk')
         if visit_pk:
             self.current_visit = get_object_or_404(Visit, pk=visit_pk)
             self.current_patient = self.current_visit.enrollment.patient.patient
 
     def get_object(self):
-        """
-        EDIT mode: return CRF4 instance and set current_visit / current_patient
-        """
         obj = super().get_object()
         if obj:
             self.current_visit = obj.visit
@@ -46,16 +44,12 @@ class CRF4CreateUpdateView(CreateUpdateView):
         return kwargs
 
     def get_extra_context(self):
-        visit = self.current_visit
-        title_pid = (
-            visit.enrollment.patient.patient.pid if visit else "New CRF4"
-        )
+        title_pid = self.current_patient.pid if self.current_patient else "New CRF4"
         context_title = (
             f"Edit CRF4 - Concomitant Medications ({title_pid})"
             if getattr(self, 'object', None)
             else f"Add CRF4 - Concomitant Medications ({title_pid})"
         )
-
         return {
             'current_visit': self.current_visit,
             'current_patient': self.current_patient,
@@ -71,7 +65,7 @@ class CRF4CreateUpdateView(CreateUpdateView):
             preselected_visit=self.current_visit
         )
 
-        # 🔑 Bind visit for CREATE
+        # Bind visit for CREATE
         if not self.object:
             if not self.current_visit:
                 raise ValueError("visit_pk is required to create CRF4")
@@ -89,13 +83,7 @@ class CRF4CreateUpdateView(CreateUpdateView):
 
         return self.render_form(request, form)
 
-    def form_valid_success(self, form):
-        messages.success(self.request, "CRF4 - Concomitant Medications saved successfully.")
-
     def get_success_url(self):
-        """
-        Redirect to the visit detail page (or patient list fallback)
-        """
         visit = self.object.visit
         enrollment = visit.enrollment
         return reverse_lazy(

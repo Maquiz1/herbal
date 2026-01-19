@@ -1,3 +1,5 @@
+# nimregenin/forms/crf5.py
+
 from django import forms
 from django.utils import timezone
 from ...models import CRF5, Visit
@@ -6,14 +8,19 @@ from ...models import CRF5, Visit
 class CRF5Form(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
+        # enrollment is passed from the view
         self.enrollment = kwargs.pop('enrollment', None)
         super().__init__(*args, **kwargs)
 
+        # Restrict visits to the specific patient’s enrollment
         if self.enrollment:
-            self.fields['visit'].queryset = Visit.objects.filter(enrollment=self.enrollment).order_by('planned_date')
-            self.fields['visit'].label = "Associated Visit"
+            self.fields['visit'].queryset = (
+                Visit.objects.filter(enrollment=self.enrollment).order_by('planned_date')
+            )
+            self.fields['visit'].label = "Form completed after Visit"
             self.fields['visit'].widget = forms.Select(attrs={'class': 'form-select'})
 
+        # Defaults for new record
         if not self.instance.pk:
             self.initial.setdefault('visit_date', timezone.now().date())
             self.initial.setdefault('onset_date', timezone.now().date())
@@ -41,16 +48,16 @@ class CRF5Form(forms.ModelForm):
             'serious': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
-            'visit_date': 'Date of Adverse Event Report',
-            'ae_description': 'Adverse Event Description',
+            'visit_date': 'Date of Adverse Event Reporting',
+            'ae_description': 'Description of Adverse Event',
             'severity': 'Severity',
             'serious': 'Serious Adverse Event',
             'onset_date': 'Onset Date',
             'resolution_date': 'Resolution Date',
             'outcome': 'Outcome',
-            'relationship_to_study': 'Relationship to Study Drug/Intervention',
+            'relationship_to_study': 'Relationship to Study Drug',
             'notes': 'Additional Notes',
         }
         help_texts = {
-            'serious': 'Check if the adverse event is classified as serious.',
+            'serious': 'Check if the adverse event is classified as serious.',  
         }

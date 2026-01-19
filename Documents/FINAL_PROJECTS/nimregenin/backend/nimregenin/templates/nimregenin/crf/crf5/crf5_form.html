@@ -9,15 +9,6 @@
                 <i class="bi bi-exclamation-triangle me-2"></i>{{ title }}
             </h2>
 
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
-            {% endif %}
-
             {% if current_patient %}
             <div class="card mb-4 border-info">
                 <div class="card-header bg-info text-white">
@@ -38,7 +29,7 @@
             </div>
             {% endif %}
 
-            <div class="card shadow border-danger">
+            <div class="card shadow">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">CRF5 - Adverse Event Report</h5>
                 </div>
@@ -46,8 +37,8 @@
                     <form method="post" novalidate>
                         {% csrf_token %}
 
-                        <!-- Visit dropdown -->
-                        <div class="mb-4">
+                        <!-- Visit dropdown (restricted to patient’s enrollment visits) -->
+                        <div class="mb-3">
                             {{ form.visit.label_tag }}
                             {{ form.visit }}
                             {% if form.visit.errors %}
@@ -55,86 +46,21 @@
                             {% endif %}
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.visit_date.label_tag }}
-                                {{ form.visit_date }}
-                                {% if form.visit_date.errors %}
-                                    <div class="text-danger mt-1">{{ form.visit_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.onset_date.label_tag }}
-                                {{ form.onset_date }}
-                                {% if form.onset_date.errors %}
-                                    <div class="text-danger mt-1">{{ form.onset_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            {{ form.ae_description.label_tag }}
-                            {{ form.ae_description }}
-                            {% if form.ae_description.errors %}
-                                <div class="text-danger mt-1">{{ form.ae_description.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.severity.label_tag }}
-                                {{ form.severity }}
-                                {% if form.severity.errors %}
-                                    <div class="text-danger mt-1">{{ form.severity.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-check mt-4">
-                                    {{ form.serious }}
-                                    {{ form.serious.label_tag }}
-                                    {% if form.serious.errors %}
-                                        <div class="text-danger mt-1">{{ form.serious.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.resolution_date.label_tag }}
-                                {{ form.resolution_date }}
-                                {% if form.resolution_date.errors %}
-                                    <div class="text-danger mt-1">{{ form.resolution_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.relationship_to_study.label_tag }}
-                                {{ form.relationship_to_study }}
-                                {% if form.relationship_to_study.errors %}
-                                    <div class="text-danger mt-1">{{ form.relationship_to_study.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            {{ form.outcome.label_tag }}
-                            {{ form.outcome }}
-                            {% if form.outcome.errors %}
-                                <div class="text-danger mt-1">{{ form.outcome.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-4">
-                            {{ form.notes.label_tag }}
-                            {{ form.notes }}
-                            {% if form.notes.errors %}
-                                <div class="text-danger mt-1">{{ form.notes.errors }}</div>
-                            {% endif %}
-                        </div>
+                        <!-- Remaining fields -->
+                        <div class="mb-3">{{ form.visit_date.label_tag }} {{ form.visit_date }}</div>
+                        <div class="mb-3">{{ form.ae_description.label_tag }} {{ form.ae_description }}</div>
+                        <div class="mb-3">{{ form.severity.label_tag }} {{ form.severity }}</div>
+                        <div class="form-check mb-3">{{ form.serious }} {{ form.serious.label_tag }}</div>
+                        <div class="mb-3">{{ form.onset_date.label_tag }} {{ form.onset_date }}</div>
+                        <div class="mb-3">{{ form.resolution_date.label_tag }} {{ form.resolution_date }}</div>
+                        <div class="mb-3">{{ form.outcome.label_tag }} {{ form.outcome }}</div>
+                        <div class="mb-3">{{ form.relationship_to_study.label_tag }} {{ form.relationship_to_study }}</div>
+                        <div class="mb-4">{{ form.notes.label_tag }} {{ form.notes }}</div>
 
                         <div class="d-flex gap-3 mt-5">
                             <button type="submit" class="btn btn-danger btn-lg px-5">
-                                <i class="bi bi-save me-2"></i> Save AE Report
+                                <i class="bi bi-save me-2"></i>
+                                {% if object %}Update{% else %}Save{% endif %} Adverse Event
                             </button>
                             <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
                                 <i class="bi bi-x-circle me-2"></i> Cancel

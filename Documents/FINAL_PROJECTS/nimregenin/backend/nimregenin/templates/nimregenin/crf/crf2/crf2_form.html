@@ -18,7 +18,7 @@
                 {% endfor %}
             {% endif %}
 
-            {% if selected_patient %}
+            {% if current_patient and current_visit %}
             <div class="card mb-4 border-info">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Patient Information</h5>
@@ -27,11 +27,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <strong>Patient ID (PID):</strong>
-                            <span class="fw-bold ms-2">{{ selected_patient.pid }}</span>
+                            <span class="fw-bold ms-2">{{ current_patient.pid }}</span>
                         </div>
                         <div class="col-md-6">
-                            <strong>Name:</strong>
-                            <span class="ms-2">{{ selected_patient.get_full_name }}</span>
+                            <strong>Visit Day:</strong>
+                            <span class="fw-bold ms-2">{{ current_visit.get_visit_type_display }}</span>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
-                        {{ form.visit }}
+                        {{ form.visit }} <!-- hidden field -->
 
                         <div class="mb-3">
                             {{ form.visit_date.label_tag }}

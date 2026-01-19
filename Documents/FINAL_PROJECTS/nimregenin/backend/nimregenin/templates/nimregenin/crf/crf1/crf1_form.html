@@ -16,7 +16,6 @@
                 {% endif %}
             </h2>
 
-            <!-- Messages -->
             {% if messages %}
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
@@ -26,8 +25,7 @@
                 {% endfor %}
             {% endif %}
 
-            <!-- Patient Info (if preselected) -->
-            {% if selected_patient %}
+            {% if current_patient and current_visit %}
             <div class="card mb-4 border-info">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Patient Information</h5>
@@ -36,24 +34,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <strong>Patient ID (PID):</strong>
-                            <span class="fw-bold ms-2">{{ selected_patient.pid }}</span>
+                            <span class="fw-bold ms-2">{{ current_patient.pid }}</span>
                         </div>
                         <div class="col-md-6">
-                            <strong>Full Name:</strong>
-                            <span class="ms-2">{{ selected_patient.get_full_name }}</span>
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-6">
-                            <strong>Age / Gender:</strong>
-                            <span class="ms-2">
-                                {% if selected_patient.age %}{{ selected_patient.age }} yrs{% endif %}
-                                {% if selected_patient.get_gender_display %} / {{ selected_patient.get_gender_display }}{% endif %}
-                            </span>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Site:</strong>
-                            <span class="ms-2">{{ selected_patient.site.name|default:"—" }}</span>
+                            <strong>Visit Day:</strong>
+                            <span class="fw-bold ms-2">{{ current_visit.get_visit_type_display }}</span>
                         </div>
                     </div>
                 </div>
@@ -67,9 +52,7 @@
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
-
-                        <!-- Hidden visit field -->
-                        {{ form.visit }}
+                        {{ form.visit }} <!-- hidden field -->
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -100,7 +83,7 @@
                             </div>
                         </div>
 
-                        <!-- BMI Display (read-only) -->
+                        <!-- BMI Display -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">BMI (kg/m²)</label>
                             <div class="form-control bg-light">

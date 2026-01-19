@@ -12,6 +12,7 @@ from ....models import CRF2, Visit
 class CRF2CreateUpdateView(CreateUpdateView):
     """
     Create / Update view for CRF2 (Vital Signs).
+    Visit is preselected and hidden in the form.
     """
     model = CRF2
     form_class = CRF2Form
@@ -46,16 +47,12 @@ class CRF2CreateUpdateView(CreateUpdateView):
         return kwargs
 
     def get_extra_context(self):
-        title_pid = (
-            self.current_visit.enrollment.patient.patient.pid
-            if self.current_visit else "New CRF2"
-        )
+        title_pid = self.current_patient.pid if self.current_patient else "New CRF2"
         context_title = (
             f"Edit CRF2 - Vital Signs ({title_pid})"
             if getattr(self, 'object', None)
             else f"Add CRF2 - Vital Signs ({title_pid})"
         )
-
         return {
             'current_visit': self.current_visit,
             'current_patient': self.current_patient,
@@ -71,7 +68,7 @@ class CRF2CreateUpdateView(CreateUpdateView):
             preselected_visit=self.current_visit
         )
 
-        # 🔑 Bind visit for CREATE
+        # Bind visit for CREATE
         if not self.object:
             if not self.current_visit:
                 raise ValueError("visit_pk is required to create CRF2")
@@ -91,7 +88,7 @@ class CRF2CreateUpdateView(CreateUpdateView):
 
     def get_success_url(self):
         """
-        Redirect to the visit detail page (or patient list fallback)
+        Redirect to the visit list for this enrollment
         """
         visit = self.object.visit
         enrollment = visit.enrollment
