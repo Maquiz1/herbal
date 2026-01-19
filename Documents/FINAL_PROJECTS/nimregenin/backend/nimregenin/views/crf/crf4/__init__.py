@@ -1,5 +1,5 @@
 from .crf4_list import CRF4ListView
-from .crf4_form import CRF4CreateUpdateView
+from .crf4_form_view import CRF4CreateUpdateView
 from .crf4_delete import CRF4DeleteView
 
 

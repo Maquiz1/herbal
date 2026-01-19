@@ -1,5 +1,5 @@
 from .crf6_list import CRF6ListView
-from .crf6_form import CRF6CreateUpdateView
+from .crf6_form_view import CRF6CreateUpdateView
 from .crf6_delete import CRF6DeleteView
 
 

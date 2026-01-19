@@ -18,7 +18,7 @@
                 {% endfor %}
             {% endif %}
 
-            {% if selected_patient %}
+            {% if current_patient %}
             <div class="card mb-4 border-info">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Patient Information</h5>
@@ -27,11 +27,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <strong>Patient ID (PID):</strong>
-                            <span class="fw-bold ms-2">{{ selected_patient.pid }}</span>
+                            <span class="fw-bold ms-2">{{ current_patient.pid }}</span>
                         </div>
                         <div class="col-md-6">
                             <strong>Name:</strong>
-                            <span class="ms-2">{{ selected_patient.get_full_name }}</span>
+                            <span class="ms-2">{{ current_patient.get_full_name }}</span>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,15 @@
                 <div class="card-body">
                     <form method="post" novalidate>
                         {% csrf_token %}
-                        {{ form.visit }}
+
+                        <!-- Visit dropdown -->
+                        <div class="mb-4">
+                            {{ form.visit.label_tag }}
+                            {{ form.visit }}
+                            {% if form.visit.errors %}
+                                <div class="text-danger mt-1">{{ form.visit.errors }}</div>
+                            {% endif %}
+                        </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">

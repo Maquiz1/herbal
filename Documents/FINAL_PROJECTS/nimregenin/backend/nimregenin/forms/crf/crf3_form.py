@@ -6,6 +6,26 @@ from ...models import CRF3
 
 
 class CRF3Form(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        # 🔑 Pop request out so BaseModelForm doesn’t choke
+        self.request = kwargs.pop('request', None)
+        self.preselected_visit = kwargs.pop('preselected_visit', None)
+        super().__init__(*args, **kwargs)
+
+        # Pre-fill visit and visit_date if preselected_visit is provided (CREATE mode)
+        if self.preselected_visit:
+            self.initial['visit'] = self.preselected_visit
+            self.initial['visit_date'] = (
+                getattr(self.preselected_visit, 'planned_date', None)
+                or timezone.now().date()
+            )
+            # Hide the visit field since it's preselected
+            self.fields['visit'].widget = forms.HiddenInput()
+
+        # Default visit_date to today if creating new record
+        if not self.instance.pk:
+            self.initial.setdefault('visit_date', timezone.now().date())
+
     class Meta:
         model = CRF3
         fields = [
@@ -36,16 +56,6 @@ class CRF3Form(forms.ModelForm):
             'alt': 'ALT (U/L)',
             'ast': 'AST (U/L)',
         }
-
-    def __init__(self, *args, **kwargs):
-        preselected_visit = kwargs.pop('preselected_visit', None)
-        super().__init__(*args, **kwargs)
-
-        if preselected_visit:
-            self.initial['visit'] = preselected_visit
-            self.initial['visit_date'] = preselected_visit.planned_date or timezone.now().date()
-            self.fields['visit'].widget = forms.HiddenInput()
-
-        # Default visit_date to today if creating new
-        if not self.instance.pk:
-            self.initial.setdefault('visit_date', timezone.now().date())
+        help_texts = {
+            'wbc': 'White Blood Cells count',
+        }

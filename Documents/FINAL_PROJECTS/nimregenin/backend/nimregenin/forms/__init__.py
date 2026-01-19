@@ -5,11 +5,11 @@ from .screening_form import ScreeningForm
 from .enrollment_form import EnrollmentForm
 from .crf.crf1_form import CRF1Form
 from .crf.crf2_form import CRF2Form
-from .crf.crf3 import CRF3Form
-from .crf.crf4 import CRF4Form
-from .crf.crf5 import CRF5Form
-from .crf.crf6 import CRF6Form
-from .crf.crf7 import CRF7Form
+from .crf.crf3_form import CRF3Form
+from .crf.crf4_form import CRF4Form
+from .crf.crf5_form import CRF5Form
+from .crf.crf6_form import CRF6Form
+from .crf.crf7_form import CRF7Form
 
 __all__ = [
     'DemographicForm',

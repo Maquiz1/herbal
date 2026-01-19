@@ -1,11 +1,22 @@
-# nimregenin/forms/crf6.py
-
 from django import forms
 from django.utils import timezone
-from ...models import CRF6
+from ...models import CRF6, Visit
 
 
 class CRF6Form(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.enrollment = kwargs.pop('enrollment', None)
+        super().__init__(*args, **kwargs)
+
+        if self.enrollment:
+            self.fields['visit'].queryset = Visit.objects.filter(enrollment=self.enrollment).order_by('planned_date')
+            self.fields['visit'].label = "Completion Visit"
+            self.fields['visit'].widget = forms.Select(attrs={'class': 'form-select'})
+
+        if not self.instance.pk:
+            self.initial.setdefault('completion_date', timezone.now().date())
+
     class Meta:
         model = CRF6
         fields = [
@@ -32,28 +43,25 @@ class CRF6Form(forms.ModelForm):
             'final_notes': 'Final Notes',
         }
 
-    def __init__(self, *args, **kwargs):
-        preselected_visit = kwargs.pop('preselected_visit', None)
-        super().__init__(*args, **kwargs)
-
-        if preselected_visit:
-            self.initial['visit'] = preselected_visit
-            self.initial['completion_date'] = preselected_visit.planned_date or timezone.now().date()
-            self.fields['visit'].widget = forms.HiddenInput()
-
-        if not self.instance.pk:
-            self.initial.setdefault('completion_date', timezone.now().date())
-
     def clean(self):
         cleaned_data = super().clean()
         early_termination = cleaned_data.get('early_termination')
         termination_reason = cleaned_data.get('termination_reason')
         other_reason = cleaned_data.get('other_reason')
+        visit = cleaned_data.get('visit')
 
         if early_termination and not termination_reason:
             self.add_error('termination_reason', 'This field is required for early termination.')
 
         if termination_reason == 'OTHER' and not other_reason:
             self.add_error('other_reason', 'Please specify the reason when "Other" is selected.')
+
+        if visit and not self.instance.pk:
+            enrollment = visit.enrollment
+            if CRF6.objects.filter(visit__enrollment=enrollment).exists():
+                raise forms.ValidationError(
+                    "A CRF6 record already exists for this patient/enrollment. "
+                    "Only one completion/termination form is allowed."
+                )
 
         return cleaned_data
