@@ -3,6 +3,18 @@ from ..models import Demographic
 
 
 class DemographicForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        # 🔑 Pop request out of kwargs so BaseModelForm doesn’t choke
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+        # Optional: you can use self.request for user-specific logic
+        # Example: filter queryset fields based on logged-in user
+        # if self.request and not self.request.user.is_superuser:
+        #     self.fields['region'].queryset = (
+        #         self.fields['region'].queryset.filter(user=self.request.user)
+        #     )
+
     class Meta:
         model = Demographic
         fields = [
@@ -46,7 +58,7 @@ class DemographicForm(forms.ModelForm):
             'nid': 'National ID',
             'remarks': 'Additional Comments',
         }
-        help_texts = {  # Optional bonus
+        help_texts = {
             'pid': 'Unique identifier assigned to the patient',
             'phone_patient': 'Format: +255XXXXXXXXX',
         }

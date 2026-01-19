@@ -9,8 +9,30 @@ class CRF1Form(forms.ModelForm):
     bmi_display = forms.CharField(
         label='BMI (kg/m²)',
         required=False,
-        widget=forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'})
+        widget=forms.TextInput(attrs={
+            'readonly': 'readonly',
+            'class': 'form-control bg-light'
+        })
     )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Accept optional 'current_visit' from the view to pre-fill visit/visit_date.
+        Show BMI if editing existing CRF1.
+        """
+        self.request = kwargs.pop('request', None)          # 🔑 allow request safely
+        self.current_visit = kwargs.pop('current_visit', None)
+        super().__init__(*args, **kwargs)
+
+        # Pre-fill visit and visit_date from current_visit (CREATE mode)
+        if self.current_visit and not self.instance.pk:
+            self.fields['visit'].initial = self.current_visit
+            if hasattr(self.current_visit, 'planned_date'):
+                self.fields['visit_date'].initial = self.current_visit.planned_date
+
+        # Show BMI if editing existing CRF1
+        if self.instance.pk and self.instance.bmi is not None:
+            self.fields['bmi_display'].initial = self.instance.bmi
 
     class Meta:
         model = CRF1
@@ -36,23 +58,6 @@ class CRF1Form(forms.ModelForm):
             'medical_history': 'Medical History',
             'concomitant_medications': 'Concomitant Medications',
         }
-
-    def __init__(self, *args, **kwargs):
-        """
-        Accept optional 'current_visit' from the view to pre-fill visit/visit_date.
-        Show BMI if editing existing CRF1.
-        """
-        self.current_visit = kwargs.pop('current_visit', None)
-        super().__init__(*args, **kwargs)
-
-        # Pre-fill visit and visit_date from current_visit (CREATE mode)
-        if self.current_visit and not self.instance.pk:
-            self.fields['visit'].initial = self.current_visit
-            self.fields['visit_date'].initial = self.current_visit.planned_date
-
-        # Show BMI if editing existing CRF1
-        if self.instance.pk and self.instance.bmi is not None:
-            self.fields['bmi_display'].initial = self.instance.bmi
 
     def clean(self):
         cleaned_data = super().clean()

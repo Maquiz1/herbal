@@ -1,7 +1,7 @@
 # nimregenin/urls/crf/__init__.py
 
 from .crf1_url import urlpatterns as crf1_urls
-from .crf2 import urlpatterns as crf2_urls
+from .crf2_url import urlpatterns as crf2_urls
 from .crf3 import urlpatterns as crf3_urls
 from .crf4 import urlpatterns as crf4_urls
 from .crf5 import urlpatterns as crf5_urls

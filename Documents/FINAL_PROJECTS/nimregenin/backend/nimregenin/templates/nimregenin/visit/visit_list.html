@@ -34,7 +34,7 @@
                         <div class="col-md-6">
                             <h6><i class="bi bi-bandaid"></i> Adverse Events (CRF5)</h6>
                             <p class="text-muted small">Report any safety event during the study.</p>
-                            <a href="{% url 'nimregenin:crf5_create' %}?visit_pk={{ visit.pk }}"
+                            <a href="{% url 'nimregenin:crf5_create' %}"
                                class="btn btn-sm btn-outline-danger mb-2">
                                 <i class="bi bi-plus-lg"></i> Report New AE
                             </a>
@@ -56,7 +56,7 @@
                                     </a>
                                     <span class="badge bg-success ms-2">Completed</span>
                                 {% else %}
-                                    <a href="{% url 'nimregenin:crf6_create' %}?visit_pk={{ day120_visit.pk }}"
+                                    <a href="{% url 'nimregenin:crf6_create' day120_visit.pk %}"
                                        class="btn btn-sm btn-success">
                                         <i class="bi bi-plus-lg"></i> Complete Study
                                     </a>
@@ -121,12 +121,12 @@
                         {% if visit.crf2 %}
                             <li class="list-group-item d-flex justify-content-between">
                                 CRF2 - Vital Signs
-                                <a href="{% url 'nimregenin:crf2_update' visit.crf2.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'nimregenin:crf2_update' visit.crf2.pk %}" class="btn btn-sm btn-primary">Edit</a>
                             </li>
                         {% else %}
                             <li class="list-group-item d-flex justify-content-between text-muted">
                                 CRF2 - Vital Signs
-                                <a href="{% url 'nimregenin:crf2_create' %}?visit_pk={{ visit.pk }}" class="btn btn-sm btn-outline-secondary">Add</a>
+                                <a href="{% url 'nimregenin:crf2_create' visit.pk %}" class="btn btn-sm btn-outline-secondary">Add</a>
                             </li>
                         {% endif %}
 
@@ -134,12 +134,12 @@
                         {% if visit.crf3 %}
                             <li class="list-group-item d-flex justify-content-between">
                                 CRF3 - Laboratory Results
-                                <a href="{% url 'nimregenin:crf3_update' visit.crf3.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'nimregenin:crf3_update' visit.crf3.pk %}" class="btn btn-sm btn-primary">Edit</a>
                             </li>
                         {% else %}
                             <li class="list-group-item d-flex justify-content-between text-muted">
                                 CRF3 - Laboratory Results
-                                <a href="{% url 'nimregenin:crf3_create' %}?visit_pk={{ visit.pk }}" class="btn btn-sm btn-outline-secondary">Add</a>
+                                <a href="{% url 'nimregenin:crf3_create' visit.pk %}" class="btn btn-sm btn-outline-secondary">Add</a>
                             </li>
                         {% endif %}
 
@@ -147,12 +147,12 @@
                         {% if visit.crf4 %}
                             <li class="list-group-item d-flex justify-content-between">
                                 CRF4 - Concomitant Medications
-                                <a href="{% url 'nimregenin:crf4_update' visit.crf4.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'nimregenin:crf4_update' visit.crf4.pk %}" class="btn btn-sm btn-primary">Edit</a>
                             </li>
                         {% else %}
                             <li class="list-group-item d-flex justify-content-between text-muted">
                                 CRF4 - Concomitant Medications
-                                <a href="{% url 'nimregenin:crf4_create' %}?visit_pk={{ visit.pk }}" class="btn btn-sm btn-outline-secondary">Add</a>
+                                <a href="{% url 'nimregenin:crf4_create' visit.pk %}" class="btn btn-sm btn-outline-secondary">Add</a>
                             </li>
                         {% endif %}
 
@@ -160,12 +160,12 @@
                         {% if visit.crf7 %}
                             <li class="list-group-item d-flex justify-content-between">
                                 CRF7 - Efficacy Assessment
-                                <a href="{% url 'nimregenin:crf7_update' visit.crf7.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="{% url 'nimregenin:crf7_update' visit.crf7.pk %}" class="btn btn-sm btn-primary">Edit</a>
                             </li>
                         {% else %}
                             <li class="list-group-item d-flex justify-content-between text-muted">
                                 CRF7 - Efficacy Assessment
-                                <a href="{% url 'nimregenin:crf7_create' %}?visit_pk={{ visit.pk }}" class="btn btn-sm btn-outline-secondary">Add</a>
+                                <a href="{% url 'nimregenin:crf7_create' visit.pk %}" class="btn btn-sm btn-outline-secondary">Add</a>
                             </li>
                         {% endif %}
 

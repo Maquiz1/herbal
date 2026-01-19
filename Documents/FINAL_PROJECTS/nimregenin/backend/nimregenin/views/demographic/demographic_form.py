@@ -1,25 +1,43 @@
-# nimregenin/views/patient.py or wherever you keep it
+# nimregenin/views/patient.py
 
-from django.contrib import messages
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+
 from ..create_update_view import CreateUpdateView
 from ...models import Demographic
 from ...forms import DemographicForm
 
-class DemographicCreateUpdateView(CreateUpdateView, LoginRequiredMixin):
+
+class DemographicCreateUpdateView(CreateUpdateView):
     model = Demographic
-    form_class = DemographicForm           # ← use the form instead of fields
+    form_class = DemographicForm
     template_name = 'nimregenin/demographic/demographic_form.html'
+    success_url = reverse_lazy('nimregenin:patient_list')
 
-    def get_success_url(self):
-        return reverse_lazy('nimregenin:patient_list')
+    def get_extra_context(self):
+        return {
+            'title': "Edit Patient" if self.object else "Add New Patient"
+        }
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = "Edit Patient" if self.object else "Add New Patient"
-        return context
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
 
-    def form_valid(self, form):
-        messages.success(self.request, f"Patient {form.instance.pid} saved successfully.")
-        return super().form_valid(form)
+        form = self.get_form_class()(
+            request.POST,
+            instance=self.object,
+            request=request   # ✅ pass request into form
+        )
+
+        if form.is_valid():
+            self.object = form.save()
+            self.form_valid_success(form)
+            return redirect(self.get_success_url())
+
+        return self.render_form(request, form)
+
+    def form_valid_success(self, form):
+        messages.success(
+            self.request,
+            f"Patient {form.instance.pid} saved successfully."
+        )
