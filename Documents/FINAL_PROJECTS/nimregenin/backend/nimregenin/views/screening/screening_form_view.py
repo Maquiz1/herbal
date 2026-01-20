@@ -1,4 +1,6 @@
-from django.shortcuts import get_object_or_404, redirect
+# nimregenin/views/screening.py
+
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 
@@ -23,6 +25,11 @@ class ScreeningCreateUpdateView(CreateUpdateView):
                 pk=kwargs['patient_pk']
             )
 
+    def assign_related(self, form): # 🔑 Ensure patient is set before validation
+        if not self.object and self.current_patient:
+            form.instance.patient = self.current_patient
+        return form
+
     def get_extra_context(self):
         patient = self.object.patient if self.object else self.current_patient
         return {
@@ -32,28 +39,6 @@ class ScreeningCreateUpdateView(CreateUpdateView):
                 if patient else "Screen Patient"
             )
         }
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        form = self.get_form_class()(
-            request.POST,
-            instance=self.object,
-            request=request
-        )
-
-        # 🔑 REQUIRED: assign patient BEFORE validation (CREATE)
-        if not self.object:
-            if not self.current_patient:
-                raise ValueError("patient_pk is required for creating Screening")
-            form.instance.patient = self.current_patient
-
-        if form.is_valid():
-            self.object = form.save()
-            self.form_valid_success(form)
-            return redirect(self.get_success_url())
-
-        return self.render_form(request, form)
 
     def form_valid_success(self, form):
         messages.success(

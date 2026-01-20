@@ -33,6 +33,9 @@ class CreateUpdateView(LoginRequiredMixin, View):
         )
         return self.render_form(request, form)
 
+    def assign_related(self, form): # 🔑 Hook for subclasses to assign required related objects (e.g. patient for Screening) before validation.
+        return form
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form_class()(
@@ -41,6 +44,9 @@ class CreateUpdateView(LoginRequiredMixin, View):
             request=request
         )
 
+        # 🔑 Call hook before validation 
+        form = self.assign_related(form)
+        
         if form.is_valid():
             self.object = form.save(commit=False)
             # ✅ AuditModel handles created_by/updated_by internally

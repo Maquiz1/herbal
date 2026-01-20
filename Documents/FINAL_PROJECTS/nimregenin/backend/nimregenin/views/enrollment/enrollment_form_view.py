@@ -1,4 +1,6 @@
-from django.shortcuts import get_object_or_404, redirect
+# nimregenin/views/enrollment.py
+
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 
@@ -18,7 +20,6 @@ class EnrollmentCreateUpdateView(CreateUpdateView):
         self.current_screening = None
         self.current_patient = None
 
-        # CREATE mode: get Screening
         if 'screening_pk' in kwargs:
             self.current_screening = get_object_or_404(
                 Screening,
@@ -29,15 +30,16 @@ class EnrollmentCreateUpdateView(CreateUpdateView):
             self.current_patient = self.current_screening.patient
 
     def get_object(self):
-        """
-        For EDIT mode: return Enrollment instance and set screening/patient
-        """
-        obj = super().get_object() if hasattr(super(), 'get_object') else None
+        obj = super().get_object()
         if obj:
             self.current_screening = obj.screening
             self.current_patient = self.current_screening.patient
-
         return obj
+
+    def assign_related(self, form):
+        if not self.object and self.current_screening:
+            form.instance.screening = self.current_screening
+        return form
 
     def get_extra_context(self):
         return {
@@ -49,26 +51,8 @@ class EnrollmentCreateUpdateView(CreateUpdateView):
             )
         }
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form_class()(
-            request.POST,
-            instance=self.object,
-            request=request
+    def form_valid_success(self, form):
+        messages.success(
+            self.request,
+            f"Patient {self.current_patient.pid} enrolled successfully."
         )
-
-        # bind screening for CREATE
-        if not self.object:
-            if not self.current_screening:
-                raise ValueError("screening_pk is required to create Enrollment")
-            form.instance.screening = self.current_screening
-
-        if form.is_valid():
-            self.object = form.save()
-            messages.success(
-                request,
-                f"Patient {self.current_patient.pid} enrolled successfully."
-            )
-            return redirect(self.get_success_url())
-
-        return self.render_form(request, form)
