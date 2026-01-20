@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.conf import settings
 from datetime import timedelta
-from nimregenin.models import Demographic, Visit
+from nimregenin.models import Patient, Visit
 
 
 class Command(BaseCommand):
@@ -30,7 +30,7 @@ class Command(BaseCommand):
             site_code = visit.patient.site or 'UNKNOWN'
             if site_code not in sites_overdue:
                 sites_overdue[site_code] = {
-                    'site_name': dict(Demographic.SITE_CHOICES).get(site_code, 'Unknown Site'),
+                    'site_name': dict(Patient.SITE_CHOICES).get(site_code, 'Unknown Site'),
                     'patients': {}
                 }
 

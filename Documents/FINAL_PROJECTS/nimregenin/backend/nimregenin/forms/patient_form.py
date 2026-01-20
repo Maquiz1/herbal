@@ -1,8 +1,8 @@
 from django import forms
-from ..models import Demographic
+from ..models import Patient
 
 
-class DemographicForm(forms.ModelForm):
+class PatientForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # 🔑 Pop request out of kwargs so BaseModelForm doesn’t choke
         self.request = kwargs.pop('request', None)
@@ -16,7 +16,7 @@ class DemographicForm(forms.ModelForm):
         #     )
 
     class Meta:
-        model = Demographic
+        model = Patient
         fields = [
             'pid',
             'rec_date',
@@ -70,6 +70,6 @@ class DemographicForm(forms.ModelForm):
 
     def clean_pid(self):
         pid = self.cleaned_data.get('pid')
-        if pid and Demographic.objects.filter(pid=pid).exclude(pk=self.instance.pk).exists():
+        if pid and Patient.objects.filter(pid=pid).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("This PID already exists.")
         return pid

@@ -9,7 +9,7 @@ from django.contrib import messages
 
 from ..create_update_view import CreateUpdateView
 from ..delete import CRFDeleteView
-from ...models import Enrollment, Demographic, Visit
+from ...models import Enrollment, Patient, Visit
 
 
 class EnrollmentDetailView(LoginRequiredMixin, TemplateView):

@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from decimal import Decimal
+from .. audit_model import AuditModel
 
-class CRF1(models.Model):
+class CRF1(AuditModel):
     """Baseline Assessment - Only for Baseline visit"""
     visit = models.OneToOneField(
         'nimregenin.Visit',
@@ -15,8 +16,6 @@ class CRF1(models.Model):
     bmi = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, editable=False)
     medical_history = models.TextField(blank=True)
     baseline_conmeds = models.TextField(blank=True, help_text="List of concomitant medications at baseline")
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     # visit = models.OneToOneField('nimregenin.Visit', on_delete=models.CASCADE, related_name='crf1')
     visit_date = models.DateField(null=True, blank=True)
@@ -40,4 +39,4 @@ class CRF1(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"CRF1 Baseline - {self.visit.enrollment.patient.patient.pid}"
+        return f"CRF1 Baseline - {self.visit.enrollment.screening.patient.pid}"

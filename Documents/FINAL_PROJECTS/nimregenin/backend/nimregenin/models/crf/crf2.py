@@ -2,9 +2,9 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from .. audit_model import AuditModel
 
-
-class CRF2(models.Model):
+class CRF2(AuditModel):
     """Vital Signs - One per visit"""
     visit = models.OneToOneField(
         'nimregenin.Visit',
@@ -25,19 +25,12 @@ class CRF2(models.Model):
     respiratory_rate = models.PositiveIntegerField(null=True, blank=True, help_text="breaths per minute")
     physical_exam_findings = models.TextField(blank=True, help_text="Any notable physical exam findings")
     notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
 
     class Meta:
         verbose_name = "CRF2 - Vital Signs"
         verbose_name_plural = "CRF2 - Vital Signs"
 
     def __str__(self):
-        pid = self.visit.enrollment.patient.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
+        pid = self.visit.enrollment.screening.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
         date_str = self.visit_date.strftime("%b %d, %Y") if self.visit_date else "No date"
         return f"CRF2 Vital Signs - {pid} ({date_str})"

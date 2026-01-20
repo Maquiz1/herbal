@@ -4,9 +4,9 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 from datetime import date, datetime, timedelta
+from .. audit_model import AuditModel
 
-
-class CRF5(models.Model):
+class CRF5(AuditModel):
     """Adverse Events - Multiple allowed per visit"""
     visit = models.ForeignKey(
         'nimregenin.Visit',
@@ -53,5 +53,5 @@ class CRF5(models.Model):
         ordering = ['-onset_date']
 
     def __str__(self):
-        pid = self.visit.enrollment.patient.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
+        pid = self.visit.enrollment.screening.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
         return f"AE: {self.ae_description[:40]} - {pid}"

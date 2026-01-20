@@ -5,10 +5,12 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
+            <!-- Page Title -->
             <h2 class="mb-4 text-danger">
                 <i class="bi bi-exclamation-triangle me-2"></i>{{ title }}
             </h2>
 
+            <!-- Patient Information -->
             {% if current_patient %}
             <div class="card mb-4 border-info">
                 <div class="card-header bg-info text-white">
@@ -29,6 +31,7 @@
             </div>
             {% endif %}
 
+            <!-- CRF5 Form -->
             <div class="card shadow">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">CRF5 - Adverse Event Report</h5>
@@ -44,25 +47,65 @@
                             {% if form.visit.errors %}
                                 <div class="text-danger mt-1">{{ form.visit.errors }}</div>
                             {% endif %}
+                            <small class="form-text text-muted">
+                                Select the visit at which this adverse event was reported.
+                            </small>
                         </div>
 
                         <!-- Remaining fields -->
-                        <div class="mb-3">{{ form.visit_date.label_tag }} {{ form.visit_date }}</div>
-                        <div class="mb-3">{{ form.ae_description.label_tag }} {{ form.ae_description }}</div>
-                        <div class="mb-3">{{ form.severity.label_tag }} {{ form.severity }}</div>
-                        <div class="form-check mb-3">{{ form.serious }} {{ form.serious.label_tag }}</div>
-                        <div class="mb-3">{{ form.onset_date.label_tag }} {{ form.onset_date }}</div>
-                        <div class="mb-3">{{ form.resolution_date.label_tag }} {{ form.resolution_date }}</div>
-                        <div class="mb-3">{{ form.outcome.label_tag }} {{ form.outcome }}</div>
-                        <div class="mb-3">{{ form.relationship_to_study.label_tag }} {{ form.relationship_to_study }}</div>
-                        <div class="mb-4">{{ form.notes.label_tag }} {{ form.notes }}</div>
+                        <div class="mb-3">
+                            {{ form.visit_date.label_tag }}
+                            {{ form.visit_date }}
+                        </div>
 
+                        <div class="mb-3">
+                            {{ form.ae_description.label_tag }}
+                            {{ form.ae_description }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.severity.label_tag }}
+                            {{ form.severity }}
+                        </div>
+
+                        <div class="form-check mb-3">
+                            {{ form.serious }}
+                            {{ form.serious.label_tag }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.onset_date.label_tag }}
+                            {{ form.onset_date }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.resolution_date.label_tag }}
+                            {{ form.resolution_date }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.outcome.label_tag }}
+                            {{ form.outcome }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.relationship_to_study.label_tag }}
+                            {{ form.relationship_to_study }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.notes.label_tag }}
+                            {{ form.notes }}
+                        </div>
+
+                        <!-- Action Buttons -->
                         <div class="d-flex gap-3 mt-5">
                             <button type="submit" class="btn btn-danger btn-lg px-5">
                                 <i class="bi bi-save me-2"></i>
                                 {% if object %}Update{% else %}Save{% endif %} Adverse Event
                             </button>
-                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-5">
+                            <a href="{% url 'nimregenin:visit_list' current_enrollment.pk %}" 
+                               class="btn btn-outline-secondary btn-lg px-5">
                                 <i class="bi bi-x-circle me-2"></i> Cancel
                             </a>
                         </div>

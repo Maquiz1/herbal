@@ -32,7 +32,7 @@ class CRF1CreateUpdateView(CreateUpdateView):
                 pk=visit_pk,
                 visit_type='BASELINE'
             )
-            self.current_patient = self.current_visit.enrollment.patient.patient
+            self.current_patient = self.current_visit.enrollment.screening.patient
 
     def get_object(self):
         """
@@ -41,7 +41,7 @@ class CRF1CreateUpdateView(CreateUpdateView):
         obj = super().get_object()
         if obj:
             self.current_visit = obj.visit
-            self.current_patient = obj.visit.enrollment.patient.patient
+            self.current_patient = obj.visit.enrollment.screening.patient
         return obj
 
     def get_form_kwargs(self):

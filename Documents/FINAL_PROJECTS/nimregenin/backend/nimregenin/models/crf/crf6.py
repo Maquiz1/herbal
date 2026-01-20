@@ -4,8 +4,9 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 from datetime import date, datetime, timedelta
+from .. audit_model import AuditModel
 
-class CRF6(models.Model):
+class CRF6(AuditModel):
     """Study Completion / Early Termination - Only once, at end of study"""
     visit = models.OneToOneField(
         'nimregenin.Visit',
@@ -57,5 +58,5 @@ class CRF6(models.Model):
         verbose_name_plural = "CRF6 - Study Completion/Termination"
 
     def __str__(self):
-        pid = self.visit.enrollment.patient.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
+        pid = self.visit.enrollment.screening.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
         return f"CRF6 Completion - {pid} ({self.completion_date|date:'M d, Y'})"

@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.db.models import Q
 
-from ...models import Demographic
+from ...models import Patient
 
 
 class PatientListView(LoginRequiredMixin, ListView):
@@ -13,17 +13,17 @@ class PatientListView(LoginRequiredMixin, ListView):
     Shows all patients from Demographic with screening and enrollment status.
     No visit logic included.
     """
-    model = Demographic
-    template_name = 'nimregenin/demographic/patient_list.html'
+    model = Patient
+    template_name = 'nimregenin/patient/patient_list.html'
     context_object_name = 'patients'
     paginate_by = 25
     ordering = ['-created_at']
 
     def get_queryset(self):
         """
-        Base queryset: all Demographics with related site, screening, and enrollment.
+        Base queryset: all Patients with related site, screening, and enrollment.
         """
-        queryset = Demographic.objects.select_related(
+        queryset = Patient.objects.select_related(
             'site',
             'screening',           # OneToOne to Screening
             'screening__enrollment'  # OneToOne from Screening to Enrollment
@@ -48,9 +48,9 @@ class PatientListView(LoginRequiredMixin, ListView):
         context['title'] = 'Patient Registry'
 
         # Summary statistics using correct OneToOne chain
-        context['total_patients'] = Demographic.objects.count()
-        context['total_screened'] = Demographic.objects.filter(screening__isnull=False).count()
-        context['total_enrolled'] = Demographic.objects.filter(
+        context['total_patients'] = Patient.objects.count()
+        context['total_screened'] = Patient.objects.filter(screening__isnull=False).count()
+        context['total_enrolled'] = Patient.objects.filter(
             screening__enrollment__isnull=False
         ).count()
 

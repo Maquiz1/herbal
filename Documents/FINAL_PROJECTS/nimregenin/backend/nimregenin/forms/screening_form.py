@@ -10,7 +10,7 @@ class ScreeningForm(forms.ModelForm):
             'screening_date',
             'screening_status',
             'failure_reason',
-            'screened_by',
+            # 'screened_by',
         ]
         widgets = {
             'screening_date': forms.DateInput(
@@ -35,11 +35,11 @@ class ScreeningForm(forms.ModelForm):
                 'screening_date',
                 timezone.now().date()
             )
-            if self.request and self.request.user.is_authenticated:
-                self.initial.setdefault(
-                    'screened_by',
-                    self.request.user
-                )
+            # if self.request and self.request.user.is_authenticated:
+            #     self.initial.setdefault(
+            #         'screened_by',
+            #         self.request.user
+            #     )
 
     def clean(self):
         cleaned_data = super().clean()

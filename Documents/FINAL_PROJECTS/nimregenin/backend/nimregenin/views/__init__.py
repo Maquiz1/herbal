@@ -1,4 +1,4 @@
-from .demographic import *  # PatientListView, PatientVisitDetailView, etc.
+from .patient import *  # PatientListView, PatientVisitDetailView, etc.
 from .screening import *
 from .enrollment import *
 from .visit import *

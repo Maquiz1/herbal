@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db.models import Count, Q
 
-from ...models import Demographic, Screening, Enrollment, CRF6
+from ...models import Patient, Screening, Enrollment, CRF6
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -19,18 +19,18 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context['title'] = 'Nimregenin Registry Dashboard'
 
         # Total registered patients
-        context['total_patients'] = Demographic.objects.count()
+        context['total_patients'] = Patient.objects.count()
 
         # Screened patients (have a screening record)
-        context['screened_patients'] = Demographic.objects.filter(screening__isnull=False).count()
+        context['screened_patients'] = Patient.objects.filter(screening__isnull=False).count()
 
         # Eligible patients (screened and passed)
-        context['eligible_patients'] = Demographic.objects.filter(
+        context['eligible_patients'] = Patient.objects.filter(
             screening__screening_status='PASS'
         ).count()
 
         # Enrolled patients
-        context['enrolled_patients'] = Demographic.objects.filter(
+        context['enrolled_patients'] = Patient.objects.filter(
             screening__enrollment__isnull=False
         ).count()
 

@@ -34,8 +34,9 @@ class EnrollmentCreateUpdateView(CreateUpdateView):
         """
         obj = super().get_object() if hasattr(super(), 'get_object') else None
         if obj:
-            self.current_screening = obj.patient
+            self.current_screening = obj.screening
             self.current_patient = self.current_screening.patient
+
         return obj
 
     def get_extra_context(self):
@@ -60,7 +61,7 @@ class EnrollmentCreateUpdateView(CreateUpdateView):
         if not self.object:
             if not self.current_screening:
                 raise ValueError("screening_pk is required to create Enrollment")
-            form.instance.patient = self.current_screening
+            form.instance.screening = self.current_screening
 
         if form.is_valid():
             self.object = form.save()

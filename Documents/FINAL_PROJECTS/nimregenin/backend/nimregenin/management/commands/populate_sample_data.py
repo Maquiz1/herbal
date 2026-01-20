@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from datetime import date, timedelta
 from nimregenin.models import (
-    Demographic, Screening, Enrollment, Visit,
+    Patient, Screening, Enrollment, Visit,
     CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 )
 
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         today = date.today()  # December 21, 2025
 
         # ===================== PATIENT 1: COMPLETE (PT-006) =====================
-        demo1 = Demographic.objects.create(
+        demo1 = Patient.objects.create(
             patient_id='PT-009',
             date_of_birth=date(1980, 3, 10),
             age=45,
@@ -145,7 +145,7 @@ class Command(BaseCommand):
 
 
         # ===================== PATIENT 2: INCOMPLETE (PT-005) =====================
-        demo2 = Demographic.objects.create(
+        demo2 = Patient.objects.create(
             patient_id='PT-008',
             date_of_birth=date(1990, 7, 20),
             age=35,

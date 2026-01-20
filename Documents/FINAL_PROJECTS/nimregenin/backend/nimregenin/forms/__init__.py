@@ -1,6 +1,6 @@
 # nimregenin/forms/__init__.py
 
-from .demographic_form import DemographicForm
+from .patient_form import PatientForm
 from .screening_form import ScreeningForm
 from .enrollment_form import EnrollmentForm
 from .crf.crf1_form import CRF1Form
@@ -12,7 +12,7 @@ from .crf.crf6_form import CRF6Form
 from .crf.crf7_form import CRF7Form
 
 __all__ = [
-    'DemographicForm',
+    'PatientForm',
     'ScreeningForm',
     'EnrollmentForm',
     'CRF1Form', 'CRF2Form', 'CRF3Form',

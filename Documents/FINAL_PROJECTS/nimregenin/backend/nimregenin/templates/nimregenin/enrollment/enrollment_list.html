@@ -15,9 +15,8 @@
     <!-- Search -->
     <form method="get" class="mb-4">
         <div class="input-group" style="max-width: 500px;">
-            <input type="text" name="search" class="form-control"
-                   placeholder="Search by PID, Name, Study ID..."
-                   value="{{ search_term }}">
+            <input type="text" name="search" class="form-control" placeholder="Search by PID, Name, Study ID..."
+                value="{{ search_term }}">
             <button class="btn btn-outline-secondary" type="submit">
                 <i class="bi bi-search"></i> Search
             </button>
@@ -50,18 +49,18 @@
 
                     <td>
                         <strong>
-                            <a href="{% url 'nimregenin:patient_update' enrollment.patient.patient.pk %}">
-                                {{ enrollment.patient.patient.pid }}
+                            <a href="{% url 'nimregenin:patient_update' enrollment.screening.patient.pk %}">
+                                {{ enrollment.screening.patient.pid }}
                             </a>
                         </strong>
                     </td>
 
                     <td>
-                        {{ enrollment.patient.patient.fname }}
-                        {{ enrollment.patient.patient.mname }}
-                        {{ enrollment.patient.patient.lname }}
-                        {% if not enrollment.patient.patient.fname and not enrollment.patient.patient.lname %}
-                            <em class="text-muted">No name</em>
+                        {{ enrollment.screening.patient.fname }}
+                        {{ enrollment.screening.patient.mname }}
+                        {{ enrollment.screening.patient.lname }}
+                        {% if not enrollment.screening.patient.fname and not enrollment.screening.patient.lname %}
+                        <em class="text-muted">No name</em>
                         {% endif %}
                     </td>
 
@@ -71,28 +70,32 @@
 
                     <td>
                         {% if enrollment.status == 'ENROLLED' %}
-                            <span class="badge bg-primary">{{ enrollment.get_status_display }}</span>
+                        <span class="badge bg-primary">{{ enrollment.get_status_display }}</span>
                         {% elif enrollment.status == 'RANDOMIZED' %}
-                            <span class="badge bg-success">{{ enrollment.get_status_display }}</span>
+                        <span class="badge bg-success">{{ enrollment.get_status_display }}</span>
                         {% elif enrollment.status == 'WITHDRAWN' %}
-                            <span class="badge bg-danger">{{ enrollment.get_status_display }}</span>
+                        <span class="badge bg-danger">{{ enrollment.get_status_display }}</span>
                         {% else %}
-                            <span class="badge bg-secondary">{{ enrollment.get_status_display }}</span>
+                        <span class="badge bg-secondary">{{ enrollment.get_status_display }}</span>
                         {% endif %}
                     </td>
 
                     <td>
-                        {{ enrollment.enrolled_by.get_full_name|default:enrollment.enrolled_by.username|default:"—" }}
+                        {% if enrollment.created_by %}
+                        {{ enrollment.created_by.get_full_name|default:enrollment.created_by.username }}
+                        {% else %}
+                        <em class="text-muted">—</em>
+                        {% endif %}
                     </td>
 
                     <td>
                         <div class="btn-group">
                             <a href="{% url 'nimregenin:enrollment_update' enrollment.pk %}"
-                               class="btn btn-sm btn-info">
+                                class="btn btn-sm btn-info">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
                             <a href="{% url 'nimregenin:visit_list' enrollment.pk %}"
-                               class="btn btn-sm btn-primary ms-1">
+                                class="btn btn-sm btn-primary ms-1">
                                 <i class="bi bi-calendar3"></i> Visits
                             </a>
                         </div>
@@ -103,9 +106,9 @@
                 <tr>
                     <td colspan="8" class="text-center py-5 text-muted">
                         {% if search_term %}
-                            No enrollment records found for "{{ search_term }}".
+                        No enrollment records found for "{{ search_term }}".
                         {% else %}
-                            No patients enrolled yet.
+                        No patients enrolled yet.
                         {% endif %}
                     </td>
                 </tr>
@@ -121,7 +124,7 @@
             {% if page_obj.has_previous %}
             <li class="page-item">
                 <a class="page-link"
-                   href="?page={{ page_obj.previous_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
+                    href="?page={{ page_obj.previous_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
                     Previous
                 </a>
             </li>
@@ -134,7 +137,7 @@
             {% if page_obj.has_next %}
             <li class="page-item">
                 <a class="page-link"
-                   href="?page={{ page_obj.next_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
+                    href="?page={{ page_obj.next_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}">
                     Next
                 </a>
             </li>

@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from ..create_update_view import CreateUpdateView
 from ..delete import CRFDeleteView  # Reusable delete view
-from ...models import Screening, Demographic
+from ...models import Screening, Patient
 
 
 class ScreeningDeleteView(CRFDeleteView):

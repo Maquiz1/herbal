@@ -2,9 +2,9 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from . audit_model import AuditModel
 
-
-class Visit(models.Model):
+class Visit(AuditModel):
     VISIT_TYPES = (
         ('BASELINE', 'Baseline (Day 0)'),
         ('DAY7', 'Day 7'),
@@ -20,18 +20,12 @@ class Visit(models.Model):
             on_delete=models.CASCADE,
             related_name='visits'
         )
+    
     visit_type = models.CharField(max_length=20, choices=VISIT_TYPES)
     planned_date = models.DateField()
     actual_date = models.DateField(null=True, blank=True)
     completed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
-
+    
     class Meta:
         unique_together = ('enrollment', 'visit_type')
         ordering = ['planned_date']

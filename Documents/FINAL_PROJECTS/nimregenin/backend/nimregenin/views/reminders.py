@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from nimregenin.models import (
-    Demographic, Screening, Enrollment,
+    Patient, Screening, Enrollment,
     CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 )
 # from backend.nimregenin.models import Visit
@@ -17,12 +17,12 @@ from django.db.models import Q, Count
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
-from nimregenin.models import Demographic, Screening, Enrollment, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from nimregenin.models import Patient, Screening, Enrollment, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from nimregenin.models import Demographic, Visit, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from nimregenin.models import Patient, Visit, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 
 from django.utils import timezone
 from datetime import timedelta
@@ -51,7 +51,7 @@ from datetime import timedelta
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from nimregenin.models import Demographic, Visit
+from nimregenin.models import Patient, Visit
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class VoiceReminderTwiMLView(View):
         # Determine which visits to include
         if site_code:
             queryset = Visit.objects.filter(patient__site=site_code)
-            site_name = dict(Demographic.SITE_CHOICES).get(site_code, 'your site')
+            site_name = dict(Patient.SITE_CHOICES).get(site_code, 'your site')
         else:
             queryset = Visit.objects.all()
             site_name = "your sites"

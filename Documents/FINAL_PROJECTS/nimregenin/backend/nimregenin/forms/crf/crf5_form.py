@@ -1,5 +1,3 @@
-# nimregenin/forms/crf5.py
-
 from django import forms
 from django.utils import timezone
 from ...models import CRF5, Visit
@@ -7,18 +5,23 @@ from ...models import CRF5, Visit
 
 class CRF5Form(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        """
+        Accept optional 'current_enrollment' from the view to filter visits.
+        """
         self.request = kwargs.pop('request', None)
-        # enrollment is passed from the view
-        self.enrollment = kwargs.pop('enrollment', None)
+        self.current_enrollment = kwargs.pop('current_enrollment', None)
         super().__init__(*args, **kwargs)
 
-        # Restrict visits to the specific patient’s enrollment
-        if self.enrollment:
+        # Restrict dropdown to visits for this enrollment
+        if self.current_enrollment:
             self.fields['visit'].queryset = (
-                Visit.objects.filter(enrollment=self.enrollment).order_by('planned_date')
+                Visit.objects.filter(enrollment=self.current_enrollment).order_by('planned_date')
             )
-            self.fields['visit'].label = "Form completed after Visit"
-            self.fields['visit'].widget = forms.Select(attrs={'class': 'form-select'})
+        else:
+            self.fields['visit'].queryset = Visit.objects.none()
+
+        self.fields['visit'].label = "Associated Visit"
+        self.fields['visit'].widget = forms.Select(attrs={'class': 'form-select'})
 
         # Defaults for new record
         if not self.instance.pk:
@@ -48,6 +51,7 @@ class CRF5Form(forms.ModelForm):
             'serious': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
+            'visit': 'Associated Visit',
             'visit_date': 'Date of Adverse Event Reporting',
             'ae_description': 'Description of Adverse Event',
             'severity': 'Severity',
@@ -59,5 +63,11 @@ class CRF5Form(forms.ModelForm):
             'notes': 'Additional Notes',
         }
         help_texts = {
-            'serious': 'Check if the adverse event is classified as serious.',  
+            'serious': 'Check if the adverse event is classified as serious.',
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not cleaned_data.get('visit') and not self.instance.visit_id:
+            raise forms.ValidationError("Visit must be assigned before saving CRF5.")
+        return cleaned_data

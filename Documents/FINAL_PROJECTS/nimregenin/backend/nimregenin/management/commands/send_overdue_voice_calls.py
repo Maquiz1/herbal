@@ -6,7 +6,7 @@ from django.urls import reverse
 from datetime import timedelta
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from nimregenin.models import Demographic, Visit
+from nimregenin.models import Patient, Visit
 
 logger = logging.getLogger(__name__)
 

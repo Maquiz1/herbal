@@ -13,7 +13,7 @@ from django.db.models import Q, Count
 
 from ..create_update_view import CreateUpdateView
 from ...models import (
-    Demographic, Visit, Screening, Enrollment,
+    Patient, Visit, Screening, Enrollment,
     CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 )
 

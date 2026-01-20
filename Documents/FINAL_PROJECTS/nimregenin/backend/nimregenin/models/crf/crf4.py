@@ -4,8 +4,9 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 from datetime import date, datetime, timedelta
+from .. audit_model import AuditModel
 
-class CRF4(models.Model):
+class CRF4(AuditModel):
     """Concomitant Medications - One per visit (current list at that visit)"""
     visit = models.OneToOneField(
         'nimregenin.Visit',
@@ -39,6 +40,6 @@ class CRF4(models.Model):
         verbose_name_plural = "CRF4 - Concomitant Medications"
 
     def __str__(self):
-        pid = self.visit.enrollment.patient.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
+        pid = self.visit.enrollment.screening.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
         return f"CRF4 ConMeds - {pid} ({self.visit_date|date:'M d, Y'|default:'No date'})"
 

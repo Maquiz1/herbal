@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.conf import settings
 from datetime import timedelta
-from nimregenin.models import Demographic, Visit
+from nimregenin.models import Patient, Visit
 
 
 class Command(BaseCommand):

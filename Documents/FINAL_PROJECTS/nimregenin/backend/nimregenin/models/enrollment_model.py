@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from . audit_model import AuditModel
 
-
-class Enrollment(models.Model):
-    patient = models.OneToOneField('nimregenin.Screening', on_delete=models.CASCADE, related_name='enrollment')
+class Enrollment(AuditModel):
+    screening = models.OneToOneField('nimregenin.Screening', on_delete=models.CASCADE, related_name='enrollment')
     enrollment_date = models.DateField()
     study_id = models.CharField(max_length=50, blank=True)
     randomization_number = models.CharField(max_length=50, blank=True)
@@ -13,7 +13,8 @@ class Enrollment(models.Model):
         ('WITHDRAWN', 'Withdrawn'),
     )
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='ENROLLED')
-    enrolled_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"Enrolled - {self.patient.pid}"
+        if self.screening and self.screening.patient:
+            return f"Enrollment - {self.screening.patient.pid} ({self.screening.patient.get_full_name()})"
+        return "Enrollment (no patient)"

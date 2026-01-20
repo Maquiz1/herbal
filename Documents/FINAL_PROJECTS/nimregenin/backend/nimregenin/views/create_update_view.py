@@ -42,11 +42,15 @@ class CreateUpdateView(LoginRequiredMixin, View):
         )
 
         if form.is_valid():
-            self.object = form.save()
+            self.object = form.save(commit=False)
+            # ✅ AuditModel handles created_by/updated_by internally
+            self.object.save(user=request.user)
+
             self.form_valid_success(form)
             return redirect(self.get_success_url())
 
         return self.render_form(request, form)
+
 
     def render_form(self, request, form):
         context = {

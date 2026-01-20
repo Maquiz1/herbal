@@ -4,7 +4,7 @@ from django.contrib import messages
 
 from ..create_update_view import CreateUpdateView
 from ...forms import ScreeningForm
-from ...models import Screening, Demographic
+from ...models import Screening, Patient
 
 
 class ScreeningCreateUpdateView(CreateUpdateView):
@@ -19,7 +19,7 @@ class ScreeningCreateUpdateView(CreateUpdateView):
 
         if 'patient_pk' in kwargs:
             self.current_patient = get_object_or_404(
-                Demographic,
+                Patient,
                 pk=kwargs['patient_pk']
             )
 

@@ -40,7 +40,8 @@
                             <span class="badge bg-danger ms-2">
                                 {{ aes|length }} Adverse Event{{ aes|pluralize }}
                             </span>
-                            <ul class="list-group list-group-flush mt-2"> {% for ae in aes %}
+                            <ul class="list-group list-group-flush mt-2">
+                                 {% for ae in aes %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     {{ ae.ae_description|truncatewords:8 }}
                                     <a href="{% url 'nimregenin:crf5_update' ae.pk %}" class="btn btn-sm btn-primary">

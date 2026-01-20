@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 from .models import (
-    Demographic, Screening, Enrollment, Visit,
+    Patient, Screening, Enrollment, Visit,
     CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 )
 
@@ -68,7 +68,7 @@ class VisitAdmin(admin.ModelAdmin):
         'crf_completion_count',
     ]
     list_filter = ['visit_type', 'completed', 'planned_date', 'actual_date']
-    search_fields = ['enrollment__patient__patient__pid']
+    search_fields = ['enrollment__screening__patient__pid']
     date_hierarchy = 'planned_date'
     inlines = [
         CRF1Inline, CRF2Inline, CRF3Inline, CRF4Inline,
@@ -77,16 +77,15 @@ class VisitAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
-            'enrollment__patient__patient'
+            'enrollment__screening__patient'
         )
 
     def patient_link(self, obj):
-        patient = obj.enrollment.patient.patient
-        url = reverse('admin:nimregenin_demographic_change', args=[patient.pk])
+        patient = obj.enrollment.screening.patient
+        url = reverse('admin:nimregenin_patient_change', args=[patient.pk])
         return format_html('<a href="{}"><strong>{}</strong></a>', url, patient.pid)
     patient_link.short_description = 'Patient ID'
-    patient_link.admin_order_field = 'enrollment__patient__patient__pid'
-
+    patient_link.admin_order_field = 'enrollment__screening__patient__pid'
     def visit_type_display(self, obj):
         return obj.get_visit_type_display()
     visit_type_display.short_description = 'Visit Type'
@@ -141,24 +140,22 @@ class VisitInline(admin.TabularInline):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ['patient_pid', 'enrollment_date', 'study_id', 'status', 'enrolled_by']
+    list_display = ['patient_pid', 'enrollment_date', 'study_id', 'status']
     list_filter = ['status', 'enrollment_date']
-    search_fields = ['patient__patient__pid', 'study_id']
+    search_fields = ['screening__patient__pid', 'study_id']
     inlines = [VisitInline]
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('patient__patient')
-
+        return super().get_queryset(request).select_related('screening__patient')
     def patient_pid(self, obj):
-        return obj.patient.patient.pid
+        return obj.screening.patient.pid
     patient_pid.short_description = 'Patient ID'
-    patient_pid.admin_order_field = 'patient__patient__pid'
+    patient_pid.admin_order_field = 'screening__patient__pid'
 
+# ==================== Patient Admin ====================
 
-# ==================== Demographic Admin ====================
-
-@admin.register(Demographic)
-class DemographicAdmin(admin.ModelAdmin):
+@admin.register(Patient)
+class PatientAdmin(admin.ModelAdmin):
     list_display = ['pid', 'full_name', 'age', 'get_gender_display', 'site', 'screening_status', 'enrollment_status']
     list_filter = ['gender', 'site', 'created_at']
     search_fields = ['pid', 'fname', 'lname']
@@ -190,7 +187,7 @@ class DemographicAdmin(admin.ModelAdmin):
 
 @admin.register(Screening)
 class ScreeningAdmin(admin.ModelAdmin):
-    list_display = ['patient_pid', 'screening_date', 'screening_status', 'screened_by']
+    list_display = ['patient_pid', 'screening_date', 'screening_status']
     list_filter = ['screening_status', 'screening_date']
     search_fields = ['patient__pid']
 

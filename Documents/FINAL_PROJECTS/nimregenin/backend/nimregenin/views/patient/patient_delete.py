@@ -9,14 +9,14 @@ from django.contrib import messages
 
 from ..create_update_view import CreateUpdateView
 from ..delete import CRFDeleteView
-from ...models import Enrollment, Demographic, Visit
+from ...models import Enrollment, Patient, Visit
 
 
-class DemographicDeleteView(CRFDeleteView):
+class PatientDeleteView(CRFDeleteView):
     """
-    Delete a demographic record (use with caution — breaks data integrity).
+    Delete a patient record (use with caution — breaks data integrity).
     """
-    model = Demographic
+    model = Patient
     def get_success_url(self):
         patient = self.object.patient
         return reverse_lazy('nimregenin:patient_list')

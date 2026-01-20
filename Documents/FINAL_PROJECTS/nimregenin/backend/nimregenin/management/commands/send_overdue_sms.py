@@ -5,7 +5,7 @@ from django.conf import settings
 from datetime import timedelta
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from nimregenin.models import Demographic, Visit
+from nimregenin.models import Patient, Visit
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 site_code = visit.patient.site or 'UNKNOWN'
                 if site_code not in sites_overdue:
                     sites_overdue[site_code] = {
-                        'site_name': dict(Demographic.SITE_CHOICES).get(site_code, 'Unknown Site'),
+                        'site_name': dict(Patient.SITE_CHOICES).get(site_code, 'Unknown Site'),
                         'visits': []
                     }
                 days_overdue = (today - (visit.planned_date + grace_period)).days

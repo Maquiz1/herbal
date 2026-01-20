@@ -18,7 +18,7 @@ def track_enrollment_date_change(sender, instance, **kwargs):
 @receiver(post_save, sender=Enrollment)
 def manage_visit_schedule(sender, instance, created, **kwargs):
     enrollment_date = instance.enrollment_date
-    enrolled_by = instance.enrolled_by
+    created_by = instance.created_by
 
     visit_schedule = [
         ('BASELINE', 0),
@@ -38,7 +38,7 @@ def manage_visit_schedule(sender, instance, created, **kwargs):
                 enrollment=instance,
                 visit_type=visit_type,
                 planned_date=planned_date,
-                created_by=enrolled_by
+                created_by=created_by
             )
     elif instance._old_enrollment_date and instance._old_enrollment_date != enrollment_date:
         # On update: if date changed, adjust all planned dates

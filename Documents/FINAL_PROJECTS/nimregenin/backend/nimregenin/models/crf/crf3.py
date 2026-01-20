@@ -2,9 +2,9 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from .. audit_model import AuditModel
 
-
-class CRF3(models.Model):
+class CRF3(AuditModel):
     """Laboratory Results - One per visit"""
     visit = models.OneToOneField(
         'nimregenin.Visit',
@@ -69,6 +69,6 @@ class CRF3(models.Model):
         verbose_name_plural = "CRF3 - Laboratory Results"
 
     def __str__(self):
-        pid = self.visit.enrollment.patient.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
+        pid = self.visit.enrollment.screening.patient.pid if hasattr(self.visit, 'enrollment') else "Unknown"
         date_str = self.visit_date.strftime("%b %d, %Y") if self.visit_date else "No date"
         return f"CRF3 Labs - {pid} ({date_str})"

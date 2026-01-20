@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from ..create_update_view import CreateUpdateView
 from ..delete import CRFDeleteView  # Reusable delete view
-from ...models import Screening, Demographic
+from ...models import Screening, Patient
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,7 +20,7 @@ from django.db.models import Q, Count
 
 from ..create_update_view import CreateUpdateView
 from ...models import (
-    Demographic, Visit, Screening, Enrollment,
+    Patient, Visit, Screening, Enrollment,
     CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 )
 

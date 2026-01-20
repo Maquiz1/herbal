@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from nimregenin.models import (
-    Demographic, Screening, Enrollment,
+    Patient, Screening, Enrollment,
     CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 )
 # from backend.nimregenin.models import Visit
@@ -16,12 +16,12 @@ from django.db.models import Q, Count
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
-from nimregenin.models import Demographic, Screening, Enrollment, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from nimregenin.models import Patient, Screening, Enrollment, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from nimregenin.models import Demographic, Visit, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
+from nimregenin.models import Patient, Visit, CRF1, CRF2, CRF3, CRF4, CRF5, CRF6, CRF7
 
 from django.utils import timezone
 from datetime import timedelta
@@ -55,7 +55,7 @@ class OverduePatientsCSVExportView(LoginRequiredMixin, View):
             'Visit Type', 'Planned Date', 'Actual Date', 'Days Overdue', 'Status'
         ])
 
-        overdue_patients = Demographic.objects.filter(visits__planned_date__lt=today - grace_period, visits__completed=False).distinct()
+        overdue_patients = Patient.objects.filter(visits__planned_date__lt=today - grace_period, visits__completed=False).distinct()
 
         for patient in overdue_patients.prefetch_related('visits', 'enrollment'):
             enrollment_date = getattr(patient.enrollment, 'enrollment_date', 'N/A')
