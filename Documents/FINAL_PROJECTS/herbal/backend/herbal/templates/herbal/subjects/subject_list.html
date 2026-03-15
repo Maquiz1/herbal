@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load querystring %}
 
 {% block content %}
 
@@ -32,7 +33,7 @@
 
                 <tbody>
 
-                    {% for subject in subjects %}
+                    {% for subject in page_obj %}
 
                     <tr>
 
@@ -46,7 +47,7 @@
 
                         <td>
 
-                            <a class="btn btn-sm btn-primary" href="{% url 'herbal:subjects-detail' subject.pk %}">
+                            <a class="btn btn-sm btn-primary" href="{% url 'herbal:subjects-detail' subject.pk %}?{{ request.GET.urlencode }}">
                                 View
                             </a>
 

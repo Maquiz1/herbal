@@ -1,54 +1,53 @@
 # herbal/views/subjects/list/subject_list_view.py
 
 from django.shortcuts import render
-from django.core.paginator import Paginator
 
 from herbal.services.access_control import get_accessible_subjects
+from utils.pagination import paginate_queryset
+from utils.filters import apply_search, apply_filters
+
+
+from django.shortcuts import render
+
+from herbal.models import Subject
+from utils.pagination import paginate_queryset
+from utils.filters import apply_search, apply_filters
+from sites.models import Site
 
 
 def subject_list_view(request):
 
-    subjects = get_accessible_subjects(request.user)
+    subjects = Subject.objects.for_user(request.user)
 
-    # SEARCH
     search = request.GET.get("search")
-
-    if search:
-        subjects = subjects.filter(subject_id__icontains=search)
-
-    # FILTER STATUS
     status = request.GET.get("status")
 
+    subjects = apply_search(
+        subjects,
+        search,
+        ["subject_id", "first_name", "last_name", "phone"]
+    )
+
+    subjects = apply_filters(subjects, request, ["site"])
+
     if status == "registered":
-        subjects = subjects.filter(
-            is_active=True,
-            # screening__isnull=True
-        )
+        subjects = subjects.filter(is_active=True)
 
     elif status == "screened":
-        subjects = subjects.filter(
-            screening__isnull=False,
-            # enrollment__isnull=True
-        )
+        subjects = subjects.filter(screening__isnull=False)
 
     elif status == "enrolled":
-        subjects = subjects.filter(
-            enrollment__isnull=False
-        )
+        subjects = subjects.filter(enrollment__isnull=False)
 
+    page_obj = paginate_queryset(request, subjects)
 
-    # PAGINATION
-    paginator = Paginator(subjects, 10)
-
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
+    sites = Site.objects.all()
 
     context = {
         "page_obj": page_obj,
         "search": search,
         "status": status,
-        "subjects":subjects
+        "sites": sites,
     }
 
     return render(
