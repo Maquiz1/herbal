@@ -1,0 +1,35 @@
+<div class="list-group">
+
+    <a href="{% url 'dashboard:dashboard' %}" class="list-group-item list-group-item-action">
+        Dashboard
+    </a>
+
+    <a href="{% url 'herbal:subjects-list' %}" class="list-group-item list-group-item-action">
+        Subjects
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Screening
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Enrollments
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Visits
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Reports
+    </a>
+
+    {% if request.user.is_superuser %}
+    <hr>
+
+    <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action list-group-item-warning">
+        Admin Panel
+    </a>
+    {% endif %}
+
+</div>

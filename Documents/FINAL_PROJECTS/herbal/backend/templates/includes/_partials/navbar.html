@@ -1,0 +1,23 @@
+<nav class="navbar navbar-dark bg-dark">
+
+    <div class="container-fluid">
+
+        <span class="navbar-brand">
+            Herbal Trial System
+        </span>
+
+        <div class="text-white">
+
+            {{ request.user.email }}
+
+            <a class="btn btn-sm btn-outline-light ms-3" href="{% url 'accounts:logout' %}">
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>

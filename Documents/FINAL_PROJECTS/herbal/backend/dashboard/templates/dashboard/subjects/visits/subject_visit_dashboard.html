@@ -1,0 +1,46 @@
+<!-- templates/nimregenin/subject_visit_dashboard.html -->
+
+{% load custom_tags %}
+
+<h2>Subject {{ subject.subject_id }} Visits</h2>
+
+<table border="1">
+
+    <tr>
+        <th>Visit</th>
+        <th>Date</th>
+        <th>CRF1</th>
+        <th>CRF2</th>
+        <th>CRF3</th>
+        <th>CRF4</th>
+        <th>CRF7</th>
+        <th>Status</th>
+    </tr>
+
+    {% for row in visit_data %}
+
+    <tr>
+
+        <td>{{ row.visit.visit_day }}</td>
+
+        <td>{{ row.visit.scheduled_date }}</td>
+
+        <td>{{ row.crfs.crf1|yesno:"✔,✖" }}</td>
+        <td>{{ row.crfs.crf2|yesno:"✔,✖" }}</td>
+        <td>{{ row.crfs.crf3|yesno:"✔,✖" }}</td>
+        <td>{{ row.crfs.crf4|yesno:"✔,✖" }}</td>
+        <td>{{ row.crfs.crf7|yesno:"✔,✖" }}</td>
+
+        <td>
+            {% if row.complete %}
+            Complete
+            {% else %}
+            Incomplete
+            {% endif %}
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>

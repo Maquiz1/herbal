@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="d-flex justify-content-between mb-3">
+
+<h3>Subject Detail</h3>
+
+<a href="{% url 'herbal:subjects-list' %}" class="btn btn-secondary">
+Back
+</a>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-body">
+
+<table class="table table-bordered">
+
+<tr>
+<th>Subject ID</th>
+<td>{{ subject.subject_id }}</td>
+</tr>
+
+<tr>
+<th>Site</th>
+<td>{{ subject.site }}</td>
+</tr>
+
+<tr>
+<th>First Name</th>
+<td>{{ subject.first_name }}</td>
+</tr>
+
+<tr>
+<th>Last Name</th>
+<td>{{ subject.last_name }}</td>
+</tr>
+
+<tr>
+<th>Sex</th>
+<td>{{ subject.sex }}</td>
+</tr>
+
+<tr>
+<th>Date of Birth</th>
+<td>{{ subject.date_of_birth }}</td>
+</tr>
+
+<tr>
+<th>Date Registered</th>
+<td>{{ subject.created_at }}</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

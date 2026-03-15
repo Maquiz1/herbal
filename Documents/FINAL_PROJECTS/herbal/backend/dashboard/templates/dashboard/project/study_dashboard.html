@@ -1,0 +1,60 @@
+{% load custom_tags %}
+
+<h1>Herbal Clinical Trial Dashboard</h1>
+
+<table border="1">
+
+    <tr>
+        <th>Subject</th>
+        <th>Status</th>
+        <th>D0</th>
+        <th>D7</th>
+        <th>D14</th>
+        <th>D30</th>
+        <th>D60</th>
+        <th>D90</th>
+        <th>D120</th>
+    </tr>
+
+    {% for row in subjects %}
+
+    <tr>
+
+        <td>
+            {{ row.subject.subject_id }}
+        </td>
+
+        <td>
+            {{ row.subject.enrollment.status }}
+        </td>
+
+        {% for day in "D0,D7,D14,D30,D60,D90,D120".split(",") %}
+
+        <td>
+
+            {% with visit=row.visits|get_item:day %}
+
+            {% if visit.status == "completed" %}
+            ✔
+
+            {% elif visit.status == "na" %}
+            N/A
+
+            {% elif visit.is_overdue %}
+            ⚠
+
+            {% else %}
+            ⏳
+            {% endif %}
+
+            {% endwith %}
+
+        </td>
+
+        {% endfor %}
+
+    </tr>
+
+    {% endfor %}
+
+</table>
