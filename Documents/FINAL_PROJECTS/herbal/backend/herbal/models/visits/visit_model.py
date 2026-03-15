@@ -1,26 +1,41 @@
-# herbal/models/visits/visit_model.py
-
 from django.db import models
-from .visit_schedule_model import VisitSchedule
+from core.models import BaseModel
+from herbal.models.subjects.subject_model import Subject
 
 
-class Visit(models.Model):
+VISIT_TYPES = [
+    ("day0", "Day 0"),
+    ("day7", "Day 7"),
+    ("day14", "Day 14"),
+    ("day30", "Day 30"),
+    ("day60", "Day 60"),
+    ("day90", "Day 90"),
+    ("day120", "Day 120"),
+    ("unscheduled", "Unscheduled"),
+]
 
-    schedule = models.OneToOneField(
-        VisitSchedule,
+
+class Visit(BaseModel):
+
+    subject = models.ForeignKey(
+        Subject,
         on_delete=models.CASCADE,
-        related_name="visit"
+        related_name="visits"
     )
 
-    visit_date = models.DateField()
+    visit_type = models.CharField(
+        max_length=20,
+        choices=VISIT_TYPES
+    )
 
-    weight = models.FloatField(blank=True, null=True)
+    scheduled_date = models.DateField()
 
-    blood_pressure = models.CharField(max_length=20, blank=True)
+    visit_date = models.DateField(
+        null=True,
+        blank=True
+    )
 
-    symptoms = models.TextField(blank=True)
-
-    adverse_events = models.TextField(blank=True)
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Visit {self.schedule.visit_day}"
+        return f"{self.subject.subject_id} - {self.visit_type}"

@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 from constants.constants import VISIT_SCHEDULE
-from ..models import VisitSchedule
+from herbal.models import VisitSchedule
 
 
 def generate_visit_schedule(enrollment):
@@ -15,10 +15,15 @@ def generate_visit_schedule(enrollment):
 
         visit, created = VisitSchedule.objects.get_or_create(
             enrollment=enrollment,
-            visit_day=visit_day
+            visit_day=visit_day,
+            defaults={"scheduled_date": scheduled_date},
         )
 
-        if visit.status != "completed":
-            visit.scheduled_date = scheduled_date
-            visit.save()
+        # If visit already exists and not completed, update schedule
+        if not created and visit.status != "completed":
 
+            if visit.scheduled_date != scheduled_date:
+
+                visit.scheduled_date = scheduled_date
+
+                visit.save(update_fields=["scheduled_date"])

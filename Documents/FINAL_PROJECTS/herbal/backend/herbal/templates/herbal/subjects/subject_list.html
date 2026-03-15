@@ -4,6 +4,47 @@
 {% block content %}
 
 <div class="container-fluid">
+
+    <div class="row mb-3">
+
+        <div class="col-md-3">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h4>{{ total_subjects }}</h4>
+                    <p>Total Subjects</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h4>{{ registered_count }}</h4>
+                    <p>Registered</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-dark">
+                <div class="card-body">
+                    <h4>{{ screened_count }}</h4>
+                    <p>Screened</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h4>{{ enrolled_count }}</h4>
+                    <p>Enrolled</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     {% include "includes/_filters/_form_filters.html" %}
 
     <h3>Subjects</h3>
@@ -26,6 +67,7 @@
                         <th>Site</th>
                         <th>Date Registered</th>
                         <th>Status</th>
+                        <th>Progress</th>
                         <th>Actions</th>
                     </tr>
 
@@ -42,12 +84,42 @@
                         <td>{{ subject.site }}</td>
 
                         <td>{{ subject.created_at }}</td>
+                        <td>
 
-                        <td>{{ subject.status }}</td>
+                            <span class="badge
+                                {% if subject.status == 'registered' %}bg-secondary
+                                {% elif subject.status == 'screened' %}bg-warning
+                                {% elif subject.status == 'enrolled' %}bg-success
+                                {% endif %}">
+
+                                {{ subject.status|title }}
+
+                            </span>
+
+                        </td>
 
                         <td>
 
-                            <a class="btn btn-sm btn-primary" href="{% url 'herbal:subjects-detail' subject.pk %}?{{ request.GET.urlencode }}">
+                            <div class="progress" style="height: 18px;">
+
+                                <div class="progress-bar
+                                    {% if subject.status == 'registered' %}bg-secondary
+                                    {% elif subject.status == 'screened' %}bg-warning
+                                    {% elif subject.status == 'enrolled' %}bg-success
+                                    {% endif %}" role="progressbar" style="width: {{ subject.progress }}%;">
+
+                                    {{ subject.progress }}%
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <a class="btn btn-sm btn-primary"
+                                href="{% url 'herbal:subjects-detail' subject.pk %}?{{ request.GET.urlencode }}">
                                 View
                             </a>
 

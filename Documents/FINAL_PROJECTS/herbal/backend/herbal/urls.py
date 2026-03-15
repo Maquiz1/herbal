@@ -4,7 +4,7 @@ from .views.subjects.lists.subject_list_view import subject_list_view
 from .views.subjects.creates.subject_create_view import subject_create_view
 from .views.subjects.details.subject_detail_view import subject_detail_view
 from .views.subjects.updates.subject_update_view import subject_update_view
-
+from .views.visits.visit_dashboard_view import visit_dashboard_view
 
 app_name = "herbal"
 
@@ -25,5 +25,9 @@ urlpatterns = [
         subject_update_view,
         name="subjects-update"
     ),
-
+    path(
+        "visits/dashboard/",
+        visit_dashboard_view,
+        name="visit-dashboard",
+    ),
 ]

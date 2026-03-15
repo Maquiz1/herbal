@@ -17,11 +17,7 @@ class Subject(BaseModel):
     last_name = models.CharField(max_length=100)
 
     sex = models.CharField(
-        max_length=10,
-        choices=[
-            ("Male", "Male"),
-            ("Female", "Female")
-        ]
+        max_length=10, choices=[("Male", "Male"), ("Female", "Female")]
     )
 
     date_of_birth = models.DateField()
@@ -32,10 +28,7 @@ class Subject(BaseModel):
 
     registration_date = models.DateField(auto_now_add=True)
 
-    site = models.ForeignKey(
-        Site,
-        on_delete=models.PROTECT
-    )
+    site = models.ForeignKey(Site, on_delete=models.PROTECT)
 
     # site-aware manager
     objects = SiteRestrictedManager()
@@ -47,8 +40,36 @@ class Subject(BaseModel):
         return (
             today.year
             - self.date_of_birth.year
-            - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+            - (
+                (today.month, today.day)
+                < (self.date_of_birth.month, self.date_of_birth.day)
+            )
         )
+
+
+    @property
+    def status(self):
+
+        if hasattr(self, "enrollment") and self.enrollment:
+            return "enrolled"
+
+        if hasattr(self, "screening") and self.screening:
+            return "screened"
+
+        return "registered"
+
+    @property
+    def progress(self):
+
+        status_map = {
+            "registered": 20,
+            "screened": 40,
+            "enrolled": 60,
+            "followup": 80,
+            "completed": 100,
+        }
+
+        return status_map.get(self.status, 0)
 
     def __str__(self):
 

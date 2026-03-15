@@ -1,8 +1,10 @@
 # herbal/models/visits/visit_schedule_model.py
 
 from django.db import models
-from ..enrollments.enrollment_model import Enrollment
 from django.utils import timezone
+
+from core.models import BaseModel
+from ..enrollments.enrollment_model import Enrollment
 
 
 VISIT_DAY_CHOICES = [
@@ -16,7 +18,7 @@ VISIT_DAY_CHOICES = [
 ]
 
 
-class VisitSchedule(models.Model):
+class VisitSchedule(BaseModel):
 
     enrollment = models.ForeignKey(
         Enrollment,
@@ -24,7 +26,10 @@ class VisitSchedule(models.Model):
         related_name="visits"
     )
 
-    visit_day = models.CharField(max_length=10, choices=VISIT_DAY_CHOICES)
+    visit_day = models.CharField(
+        max_length=10,
+        choices=VISIT_DAY_CHOICES
+    )
 
     scheduled_date = models.DateField()
 
@@ -41,15 +46,31 @@ class VisitSchedule(models.Model):
         default="pending"
     )
 
-    actual_visit_date = models.DateField(null=True, blank=True)
+    actual_visit_date = models.DateField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         ordering = ["scheduled_date"]
 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["enrollment", "visit_day"],
+                name="unique_enrollment_visit"
+            )
+        ]
+
     def is_overdue(self):
-        if self.status == "pending" and self.scheduled_date < timezone.now().date():
-            return True
-        return False
+
+        return (
+            self.status == "pending"
+            and self.scheduled_date < timezone.now().date()
+        )
+
+    @property
+    def subject(self):
+        return self.enrollment.subject
 
     def __str__(self):
         return f"{self.enrollment.subject.subject_id} - {self.visit_day}"

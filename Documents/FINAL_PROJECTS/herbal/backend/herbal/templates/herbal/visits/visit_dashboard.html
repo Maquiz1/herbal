@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h3>Visit Monitoring Dashboard</h3>
+
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h4>{{ overdue_count }}</h4>
+                    <p>Overdue Visits</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h4>{{ due_today_count }}</h4>
+                    <p>Due Today</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h4>{{ upcoming_count }}</h4>
+                    <p>Upcoming Visits</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h4>{{ completed_count }}</h4>
+                    <p>Completed Visits</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h4>Overdue Visits</h4>
+
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Visit</th>
+                <th>Scheduled Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for visit in overdue %}
+
+            <tr>
+
+                <td>{{ visit.subject.subject_id }}</td>
+                <td>{{ visit.get_visit_day_display }}</td>
+                <td>{{ visit.scheduled_date }}</td>
+                <td>
+                    <span class="badge bg-danger">Overdue</span>
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="4">No overdue visits</td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

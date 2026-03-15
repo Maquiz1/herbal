@@ -1,14 +1,6 @@
 # herbal/views/subjects/list/subject_list_view.py
 
 from django.shortcuts import render
-
-from herbal.services.access_control import get_accessible_subjects
-from utils.pagination import paginate_queryset
-from utils.filters import apply_search, apply_filters
-
-
-from django.shortcuts import render
-
 from herbal.models import Subject
 from utils.pagination import paginate_queryset
 from utils.filters import apply_search, apply_filters
@@ -22,14 +14,31 @@ def subject_list_view(request):
     search = request.GET.get("search")
     status = request.GET.get("status")
 
+    # SEARCH
     subjects = apply_search(
         subjects,
         search,
         ["subject_id", "first_name", "last_name", "phone"]
     )
 
+    # SITE FILTER
     subjects = apply_filters(subjects, request, ["site"])
 
+    # -------- COUNTS BEFORE STATUS FILTER --------
+    total_subjects = subjects.count()
+
+    registered_count = subjects.filter(is_active=True).count()
+
+    screened_count = subjects.filter(
+        screening__isnull=False
+    ).count()
+
+    enrolled_count = subjects.filter(
+        enrollment__isnull=False
+    ).count()
+    # ---------------------------------------------
+
+    # STATUS FILTER (for table)
     if status == "registered":
         subjects = subjects.filter(is_active=True)
 
@@ -48,6 +57,12 @@ def subject_list_view(request):
         "search": search,
         "status": status,
         "sites": sites,
+
+        # counts
+        "total_subjects": total_subjects,
+        "registered_count": registered_count,
+        "screened_count": screened_count,
+        "enrolled_count": enrolled_count,
     }
 
     return render(
